@@ -1,0 +1,18 @@
+---
+version: 2
+updates:
+  - package-ecosystem: npm
+    directory: /
+    schedule:
+      interval: monthly
+      time: "10:00"
+      timezone: Asia/Singapore
+    reviewers:
+      - "nicholas5538"
+    commit-message:
+      prefix: "pnpm prod"
+      prefix-development: "pnpm dev"
+      include: scope
+    open-pull-requests-limit: 5
+    pull-request-branch-name:
+      separator: "-"
