@@ -8,7 +8,8 @@
   "private": true,
   "type": "module",
   "scripts": {
-    "format": "npx prettier . --write",
+    "format": "npx prettier . --check",
+    "format:fix": "npx prettier . --write",
     "lint": "npx eslint",
     "prepare": "husky install",
     "start": "ts-node ./src/app.ts",
@@ -20,7 +21,7 @@
     "express": "4.18.2",
     "http-errors": "2.0.0",
     "jsonwebtoken": "9.0.1",
-    "mongoose": "7.4.1"
+    "mongoose": "7.4.2"
   },
   "devDependencies": {
     "@types/express": "4.17.17",
@@ -43,6 +44,7 @@
     "typescript": "5.1.6"
   },
   "lint-staged": {
+    "*.ts": "eslint",
     "**/*": "prettier --write --ignore-unknown"
   }
 }
