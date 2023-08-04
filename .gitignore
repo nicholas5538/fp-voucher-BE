@@ -34,3 +34,4 @@ RELEASE.md
 .jest-cache
 .verdaccio-cache
 .turbo
+.env
