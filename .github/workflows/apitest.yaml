@@ -1,0 +1,42 @@
+---
+name: Run Tests
+env:
+  JWT_SECRET: ${{ secrets.JWT_SECRET }}
+  JWT_EXPIRES_IN: ${{ secrets.JWT_EXPIRES_IN }}
+  PORT: ${{ secrets.PORT }}
+
+on:
+  pull_request:
+    branches:
+      - main
+    paths-ignore:
+      - "**.md"
+
+jobs:
+  API-tests:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3.5.3
+
+      - name: Install pnpm
+        run: npm i -g pnpm
+
+      - name: Setup Node.js environment
+        uses: actions/setup-node@v3.7.0
+        with:
+          node-version: 18
+          cache: "pnpm"
+          cache-dependency-path: pnpm-lock.yaml
+
+      - name: Install dependencies
+        run: pnpm i --frozen-lockfile --no-optional
+
+      - name: Write secrets to env file
+        run: |
+          echo "JWT_SECRET=${JWT_SECRET}" > .env
+          echo "JWT_EXPIRES_IN=${JWT_EXPIRES_IN}" >> .env
+          echo "PORT=${PORT}" >> .env
+
+      - name: Run API test
+        run: pnpm run test
