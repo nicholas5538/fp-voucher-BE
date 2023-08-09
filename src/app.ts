@@ -3,7 +3,8 @@ import express, { type Application } from "express";
 import connectDb from "./db/connect";
 import errorHandlerMiddleware from "./middleware/error-handler";
 import notFound from "./middleware/not-found";
-import router from "./routes/vouchers";
+import loginRouter from "./routes/login";
+import voucherRouter from "./routes/vouchers";
 
 config();
 const app: Application = express();
@@ -14,7 +15,8 @@ const uri = process.env.MONGO_URI ?? "";
 app.use(express.json());
 
 // Routes
-app.use("/api/v1/vouchers", router);
+app.use("/user", loginRouter);
+app.use("/api/v1/vouchers", voucherRouter);
 app.use(notFound);
 app.use(errorHandlerMiddleware);
 
