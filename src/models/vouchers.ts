@@ -1,14 +1,5 @@
 import { model, Schema } from "mongoose";
-
-type Tvouchers = {
-  category: "Pick-up" | "Delivery" | "Dine-in" | "Pandamart" | "Pandago";
-  description: string;
-  discount: number;
-  minSpending: number;
-  promoCode: string;
-  startDate: Date;
-  expiryDate: Date;
-};
+import type { Tvouchers } from "../constants/type-interface";
 
 const vouchersSchema = new Schema<Tvouchers>({
   category: {
@@ -31,7 +22,7 @@ const vouchersSchema = new Schema<Tvouchers>({
   discount: {
     type: Number,
     required: [true, "Discount must be 5% and above"],
-    min: [5, "Please insert a number higher than 5%"],
+    min: [5, "Please insert a number equal to or higher than 5%"],
     max: [51, "Discount must not exceed 50%"],
     default: 5,
   },
@@ -64,4 +55,4 @@ const vouchersSchema = new Schema<Tvouchers>({
   },
 });
 
-export default model("Vouchers", vouchersSchema);
+export default model<Tvouchers>("Vouchers", vouchersSchema);
