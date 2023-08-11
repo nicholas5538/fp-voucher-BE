@@ -35,8 +35,10 @@ export const getVoucher = asyncWrapper(async (req, res, next) => {
 
 export const getVouchers = asyncWrapper(async (req, res, next) => {
   const { offset, limit } = req.query;
+  // page = skip, pageSize: limit
   const skip = Number(offset) || 0,
-    limitNo = Number(limit) || 10;
+    limitNo = Number(limit) || 10,
+    page = Math.floor(skip / limitNo) + 1;
 
   const vouchers = await Vouchers.find().skip(skip).limit(limitNo);
   const totalVoucherQuery = vouchers.length;
@@ -49,14 +51,15 @@ export const getVouchers = asyncWrapper(async (req, res, next) => {
     );
 
   const baseUrl = `${req.protocol}://${req.get("host")}`;
-  const totalData = await Vouchers.countDocuments().exec();
+  const totalVouchers = await Vouchers.countDocuments().exec();
+  const lastPage = Math.floor(totalVouchers / limitNo) + 1;
 
   const links: Tlinks = {
     base: baseUrl,
     self: baseUrl + req.originalUrl,
   };
 
-  if (skip + totalVoucherQuery < totalData) {
+  if (skip + totalVoucherQuery < totalVouchers) {
     links.next = `${baseUrl}${req.originalUrl.slice(0, 16)}?offset=${
       skip + limitNo
     }&limit=${limitNo}`;
@@ -73,7 +76,9 @@ export const getVouchers = asyncWrapper(async (req, res, next) => {
   return res.status(200).json({
     _links: links,
     end: skip + totalVoucherQuery,
+    lastPage,
     limit: limitNo,
+    page,
     results: vouchers,
     start: skip,
     "X-Total-count": totalVoucherQuery,
