@@ -146,10 +146,9 @@ describe("GET /api/v1/vouchers/:id", () => {
     const response = await request(app)
       .get(`/api/v1/vouchers/${_id}`)
       .set("Authorization", validToken);
+    await Vouchers.findByIdAndDelete(_id);
     expect(response.status).toBe(200);
     expect(response.body.results).not.toBeUndefined();
     expect(response.body["X-Total-count"]).toEqual(1);
-
-    await Vouchers.findByIdAndDelete(_id);
   });
 });
