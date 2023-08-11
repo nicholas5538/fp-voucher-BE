@@ -75,6 +75,9 @@ devDependencies:
   prettier:
     specifier: 3.0.1
     version: 3.0.1
+  saslprep:
+    specifier: 1.0.3
+    version: 1.0.3
   supertest:
     specifier: 6.3.3
     version: 6.3.3
@@ -4425,8 +4428,6 @@ packages:
         integrity: sha512-ZS4Bp4r/Zoeq6+NLJpP+0Zzm0pR8whtGPf1XExKLJBAczGMnSi3It14OiNCStjQjM6NU1okjQGSxgEZN8eBYKg==,
       }
     requiresBuild: true
-    dev: false
-    optional: true
 
   /merge-descriptors@1.0.1:
     resolution:
@@ -5257,8 +5258,6 @@ packages:
     requiresBuild: true
     dependencies:
       sparse-bitfield: 3.0.3
-    dev: false
-    optional: true
 
   /semver@6.3.1:
     resolution:
@@ -5476,8 +5475,6 @@ packages:
     requiresBuild: true
     dependencies:
       memory-pager: 1.5.0
-    dev: false
-    optional: true
 
   /sprintf-js@1.0.3:
     resolution:
