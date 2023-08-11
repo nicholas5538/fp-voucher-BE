@@ -1,4 +1,5 @@
 import createError from "http-errors";
+import httpErrorsMessage from "../constants/error-messages";
 import asyncWrapper from "../middleware/async";
 import Vouchers from "../models/vouchers";
 
@@ -13,7 +14,13 @@ type Tlinks = {
 export const getVoucher = asyncWrapper(async (req, res, next) => {
   const { id: _id } = req.params;
   const voucher = await Vouchers.findById({ _id }).exec();
-  if (!voucher) return next(createError(404, "No voucher found"));
+  if (!voucher)
+    return next(
+      createError(
+        httpErrorsMessage.NoVoucher.statusCode,
+        httpErrorsMessage.NoVoucher.message
+      )
+    );
 
   const baseUrl = `${req.protocol}://${req.get("host")}`;
   return res.status(200).json({
@@ -33,7 +40,13 @@ export const getVouchers = asyncWrapper(async (req, res, next) => {
 
   const vouchers = await Vouchers.find().skip(skip).limit(limitNo);
   const totalVoucherQuery = vouchers.length;
-  if (!totalVoucherQuery) return next(createError(404, "No voucher found"));
+  if (!totalVoucherQuery)
+    return next(
+      createError(
+        httpErrorsMessage.NoVoucher.statusCode,
+        httpErrorsMessage.NoVoucher.message
+      )
+    );
 
   const baseUrl = `${req.protocol}://${req.get("host")}`;
   const totalData = await Vouchers.countDocuments().exec();

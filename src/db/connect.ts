@@ -8,7 +8,6 @@ type TconnectDb = {
 const connectDb = async ({ uri, collection }: TconnectDb): Promise<void> => {
   try {
     await connect(uri, { dbName: collection });
-    console.log(`Successfully connected to ${collection}`);
   } catch (err) {
     console.log(err);
     process.on("exit", () => disconnect());

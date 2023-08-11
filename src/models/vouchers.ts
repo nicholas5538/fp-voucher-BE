@@ -1,7 +1,8 @@
-import { model, Schema } from "mongoose";
+import { model, Schema, Types } from "mongoose";
 import type { Tvouchers } from "../constants/type-interface";
 
 const vouchersSchema = new Schema<Tvouchers>({
+  _id: Types.ObjectId,
   category: {
     type: String,
     required: [true, "Please include a category"],

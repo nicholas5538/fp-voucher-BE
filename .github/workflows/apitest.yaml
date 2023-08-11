@@ -3,6 +3,8 @@ name: Run Tests
 env:
   JWT_SECRET: ${{ secrets.JWT_SECRET }}
   JWT_EXPIRES_IN: ${{ secrets.JWT_EXPIRES_IN }}
+  MONGO_COLLECTION: ${{ secrets.MONGO_COLLECTION }}
+  MONGO_URI: ${{ secrets.MONGO_URI }}
   PORT: ${{ secrets.PORT }}
 
 on:
@@ -36,6 +38,8 @@ jobs:
         run: |
           echo "JWT_SECRET=${JWT_SECRET}" > .env
           echo "JWT_EXPIRES_IN=${JWT_EXPIRES_IN}" >> .env
+          echo "MONGO_COLLECTION=${MONGO_COLLECTION}" >> .env
+          echo "MONGO_URI=${MONGO_URI}" >> .env
           echo "PORT=${PORT}" >> .env
 
       - name: Run API test
