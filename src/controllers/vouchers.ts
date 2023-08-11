@@ -86,3 +86,16 @@ export const getVouchers = asyncWrapper(async (req, res, next) => {
 });
 
 // TODO: POST, PATCH, DELETE request
+export const deleteVoucher = asyncWrapper(async (req, res, next) => {
+  const { id: _id } = req.params;
+  const voucher = await Vouchers.findOneAndDelete({ _id }).exec();
+
+  return !voucher
+    ? next(
+        createError(
+          httpErrorsMessage.NoVoucher.statusCode,
+          httpErrorsMessage.NoVoucher.message
+        )
+      )
+    : res.status(204).json({ msg: "No content" });
+});
