@@ -1,4 +1,4 @@
-import Joi from "Joi";
+import Joi from "joi";
 
 export const tokenSchema = Joi.object({
   email: Joi.string()
