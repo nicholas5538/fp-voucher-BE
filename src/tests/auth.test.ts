@@ -29,14 +29,12 @@ describe("Test JWT verification middleware", () => {
       expiresIn: 0,
     });
 
-    const response = await request(app)
+    const { body, statusCode, unauthorized } = await request(app)
       .get("/api/v1/vouchers")
       .set("Authorization", `Bearer ${expiredToken}`);
-    expect(response.statusCode).toBe(
-      httpErrorsMessage.TokenExpiredError.statusCode
-    );
-    expect(response.body.msg).toBe(httpErrorsMessage.TokenExpiredError.message);
-    expect(response.unauthorized).toBeTruthy();
+    expect(statusCode).toBe(httpErrorsMessage.TokenExpiredError.statusCode);
+    expect(body.msg).toBe(httpErrorsMessage.TokenExpiredError.message);
+    expect(unauthorized).toBeTruthy();
   });
 
   it("should deny access with an invalid token (NotBeforeError)", async () => {
@@ -52,43 +50,41 @@ describe("Test JWT verification middleware", () => {
       }
     );
 
-    const response = await request(app)
+    const { body, statusCode, unauthorized } = await request(app)
       .get("/api/v1/vouchers")
       .set("Authorization", `Bearer ${notBeforeToken}`);
-    expect(response.statusCode).toBe(
-      httpErrorsMessage.NotBeforeError.statusCode
-    );
-    expect(response.body.msg).toBe(httpErrorsMessage.NotBeforeError.message);
-    expect(response.unauthorized).toBeTruthy();
+    expect(statusCode).toBe(httpErrorsMessage.NotBeforeError.statusCode);
+    expect(body.msg).toBe(httpErrorsMessage.NotBeforeError.message);
+    expect(unauthorized).toBeTruthy();
   });
 
   it("should deny access with an invalid token (JsonWebTokenError)", async () => {
-    const response = await request(app)
+    const { body, forbidden, statusCode } = await request(app)
       .get("/api/v1/vouchers")
       .set("Authorization", "Bearer 12345");
-    expect(response.statusCode).toBe(
-      httpErrorsMessage.JsonWebTokenError.statusCode
-    );
-    expect(response.body.msg).toBe(httpErrorsMessage.JsonWebTokenError.message);
-    expect(response.forbidden).toBeTruthy();
+    expect(statusCode).toBe(httpErrorsMessage.JsonWebTokenError.statusCode);
+    expect(body.msg).toBe(httpErrorsMessage.JsonWebTokenError.message);
+    expect(forbidden).toBeTruthy();
   });
 
   it("should deny access without a token", async () => {
-    const response = await request(app).get("/api/v1/vouchers");
-    expect(response.statusCode).toBe(httpErrorsMessage.NoToken.statusCode);
-    expect(response.body.msg).toBe(httpErrorsMessage.NoToken.message);
-    expect(response.unauthorized).toBeTruthy();
+    const { body, statusCode, unauthorized } = await request(app).get(
+      "/api/v1/vouchers"
+    );
+    expect(statusCode).toBe(httpErrorsMessage.NoToken.statusCode);
+    expect(body.msg).toBe(httpErrorsMessage.NoToken.message);
+    expect(unauthorized).toBeTruthy();
   });
 
   it("should allow access with a valid token", async () => {
-    let response = await request(app).post("/user").send(dummyBody);
-    expect(response.body).not.toBeNull();
-    const validToken = `Bearer ${response.body.token}`;
+    const { body: getToken } = await request(app).post("/user").send(dummyBody);
+    expect(getToken).not.toBeNull();
+    const validToken = `Bearer ${getToken.token}`;
 
-    response = await request(app)
+    const { body, statusCode } = await request(app)
       .get("/api/v1/vouchers")
       .set("Authorization", validToken);
-    expect(response.statusCode).toBe(200);
-    expect(response.body).not.toBeNull();
+    expect(statusCode).toBe(200);
+    expect(body).not.toBeNull();
   });
 });

@@ -1,4 +1,5 @@
 import {
+  createVoucher,
   deleteVoucher,
   getVoucher,
   getVouchers,
@@ -7,7 +8,10 @@ import authenticationMiddleware from "../middleware/auth";
 import { Router } from "express";
 
 const router = Router();
-router.route("/").get(authenticationMiddleware, getVouchers);
+router
+  .route("/")
+  .get(authenticationMiddleware, getVouchers)
+  .post(authenticationMiddleware, createVoucher);
 router
   .route("/:id")
   .get(authenticationMiddleware, getVoucher)

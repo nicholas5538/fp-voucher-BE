@@ -1,4 +1,6 @@
+import dayjs from "dayjs";
 import createError from "http-errors";
+import { Types } from "mongoose";
 import httpErrorsMessage from "../constants/error-messages";
 import asyncWrapper from "../middleware/async";
 import Vouchers from "../models/vouchers";
@@ -85,7 +87,22 @@ export const getVouchers = asyncWrapper(async (req, res, next) => {
   });
 });
 
-// TODO: POST, PATCH, DELETE request
+export const createVoucher = asyncWrapper(async (req, res, next) => {
+  const voucher = new Vouchers(req.body);
+
+  // Modify req.body
+  voucher._id = new Types.ObjectId();
+  voucher.expiryDate = dayjs(voucher.expiryDate).toDate();
+  voucher.startDate = dayjs(voucher.startDate).toDate();
+
+  const validationError = voucher.validateSync();
+  if (validationError) {
+    return next(createError(400, validationError.message));
+  }
+  await voucher.save();
+  return res.status(201).json({ msg: "Voucher has been created" });
+});
+
 export const deleteVoucher = asyncWrapper(async (req, res, next) => {
   const { id: _id } = req.params;
   const voucher = await Vouchers.findOneAndDelete({ _id }).exec();
