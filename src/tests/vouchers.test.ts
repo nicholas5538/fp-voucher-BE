@@ -35,82 +35,121 @@ beforeAll(
 afterAll(async () => await disconnect());
 
 describe("GET /api/v1/vouchers", () => {
-  it("should return next and previous URLs when there is offset and limit", async () => {
-    const { body } = await request(app).post("/user").send(dummyBody);
-    validToken = `Bearer ${body.token}`;
+  it("should return no voucher error when the offset or limit is out of bounds", async () => {
+    const { body: getToken } = await request(app).post("/user").send(dummyBody);
+    validToken = `Bearer ${getToken.token}`;
 
-    const response = await request(app)
+    const { body, notFound, statusCode } = await request(app)
+      .get(`/api/v1/vouchers?offset=${Number.MAX_SAFE_INTEGER}`)
+      .set("Authorization", validToken);
+    expect(statusCode).toBe(httpErrorsMessage.NoVoucher.statusCode);
+    expect(body.msg).toBe(httpErrorsMessage.NoVoucher.message);
+    expect(notFound).toBeTruthy();
+  });
+
+  it("should return next and previous URLs when there is offset and limit", async () => {
+    const { body, statusCode } = await request(app)
       .get("/api/v1/vouchers?offset=1&limit=1")
       .set("Authorization", validToken);
-    expect(response.statusCode).toBe(200);
-    expect(response.body).not.toBeNull();
-    expect(response.body["_links"]).toHaveProperty("next");
-    expect(response.body["_links"]).toHaveProperty("previous");
+    expect(statusCode).toBe(200);
+    expect(body).not.toBeNull();
+    expect(body["_links"]).toHaveProperty("next");
+    expect(body["_links"]).toHaveProperty("previous");
   });
 });
 
 describe("GET /api/v1/vouchers/:id", () => {
   it("should return an error when the id is invalid", async () => {
-    const response = await request(app)
+    const { body, notFound, statusCode } = await request(app)
       .get("/api/v1/vouchers/dddddddddddddddddddddddd")
       .set("Authorization", validToken);
-    expect(response.statusCode).toBe(httpErrorsMessage.NoVoucher.statusCode);
-    expect(response.body.msg).toBe(httpErrorsMessage.NoVoucher.message);
-    expect(response.notFound).toBeTruthy();
+    expect(statusCode).toBe(httpErrorsMessage.NoVoucher.statusCode);
+    expect(body.msg).toBe(httpErrorsMessage.NoVoucher.message);
+    expect(notFound).toBeTruthy();
   });
 
   it("should return the voucher when the id is valid", async () => {
     const _id = new Types.ObjectId();
     await Vouchers.create({ ...dummyVoucher, _id });
 
-    const response = await request(app)
+    const { body, statusCode } = await request(app)
       .get(`/api/v1/vouchers/${_id}`)
       .set("Authorization", validToken);
     await Vouchers.findByIdAndDelete(_id);
-    expect(response.statusCode).toBe(200);
-    expect(response.body.results).not.toBeUndefined();
-    expect(response.body["X-Total-count"]).toEqual(1);
+    expect(statusCode).toBe(200);
+    expect(body.results).not.toBeUndefined();
+    expect(body["X-Total-count"]).toEqual(1);
+  });
+});
+
+describe("POST /api/v1/vouchers", () => {
+  it("should return validation error when the request body is invalid", async () => {
+    const { badRequest, statusCode } = await request(app)
+      .post("/api/v1/vouchers")
+      .send(dummyBody)
+      .set("Authorization", validToken);
+    expect(statusCode).toBe(400);
+    expect(badRequest).toBeTruthy();
+  });
+
+  it("should create a voucher when the request body is valid", async () => {
+    const newVoucher: typeof dummyVoucher = {
+      ...dummyVoucher,
+      _id: new Types.ObjectId(),
+      description: "aaaaa",
+      promoCode: "AAAAA",
+    };
+    const { body, statusCode } = await request(app)
+      .post("/api/v1/vouchers")
+      .send(newVoucher)
+      .set("Authorization", validToken);
+    await Vouchers.deleteOne({
+      description: newVoucher.description,
+      promoCode: newVoucher.promoCode,
+    });
+    expect(statusCode).toBe(201);
+    expect(body.msg).toBe("Voucher has been created");
   });
 });
 
 describe("DELETE /api/v1/vouchers/:id", () => {
   it("should return not found erorr when the id is not provided", async () => {
-    const response = await request(app)
+    const { body, notFound, statusCode } = await request(app)
       .delete("/api/v1/vouchers")
       .set("Authorization", validToken);
-    expect(response.statusCode).toBe(404);
-    expect(response.body.msg).toBe("Not Found");
-    expect(response.notFound).toBeTruthy();
+    expect(statusCode).toBe(404);
+    expect(body.msg).toBe("Not Found");
+    expect(notFound).toBeTruthy();
   });
 
   it("should return server error when the id is not a ObjectId", async () => {
-    const response = await request(app)
+    const { body, serverError, statusCode } = await request(app)
       .delete("/api/v1/vouchers/abcdef")
       .set("Authorization", validToken);
-    expect(response.statusCode).toBe(500);
-    expect(response.body.msg).toBe("Something went wrong, please try again");
-    expect(response.serverError).toBeTruthy();
+    expect(statusCode).toBe(500);
+    expect(body.msg).toBe("Something went wrong, please try again");
+    expect(serverError).toBeTruthy();
   });
 
   it("should return no voucher when the id is invalid", async () => {
     // :id must have a length of 25
     const fakeId = new Types.ObjectId();
-    const response = await request(app)
+    const { body, notFound, statusCode } = await request(app)
       .delete(`/api/v1/vouchers/${fakeId}`)
       .set("Authorization", validToken);
-    expect(response.statusCode).toBe(httpErrorsMessage.NoVoucher.statusCode);
-    expect(response.body.msg).toBe(httpErrorsMessage.NoVoucher.message);
-    expect(response.notFound).toBeTruthy();
+    expect(statusCode).toBe(httpErrorsMessage.NoVoucher.statusCode);
+    expect(body.msg).toBe(httpErrorsMessage.NoVoucher.message);
+    expect(notFound).toBeTruthy();
   });
 
   it("should delete voucher when the id is valid", async () => {
     const _id = new Types.ObjectId();
     await Vouchers.create({ ...dummyVoucher, _id });
 
-    const response = await request(app)
+    const { noContent, statusCode } = await request(app)
       .delete(`/api/v1/vouchers/${_id}`)
       .set("Authorization", validToken);
-    expect(response.statusCode).toBe(204);
-    expect(response.noContent).toBeTruthy();
+    expect(statusCode).toBe(204);
+    expect(noContent).toBeTruthy();
   });
 });
