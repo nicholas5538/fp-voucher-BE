@@ -11,6 +11,7 @@ const httpErrorsMessage = {
     statusCode: 401,
     message: "Unauthorized: Token is no longer active",
   },
+  NoBody: { statusCode: 400, message: "Bad request: No body is sent" },
   NoToken: { statusCode: 401, message: "Unauthorized: Invalid credentials" },
   NoVoucher: {
     statusCode: 404,

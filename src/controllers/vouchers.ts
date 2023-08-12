@@ -1,6 +1,9 @@
 import dayjs from "dayjs";
+import utc from "dayjs/plugin/utc";
+import timezone from "dayjs/plugin/timezone";
 import createError from "http-errors";
 import { Types } from "mongoose";
+import { updateSchema } from "../constants/joi-schema";
 import httpErrorsMessage from "../constants/error-messages";
 import asyncWrapper from "../middleware/async";
 import Vouchers from "../models/vouchers";
@@ -13,16 +16,21 @@ type Tlinks = {
   self: string;
 };
 
+dayjs.extend(utc);
+dayjs.extend(timezone);
+dayjs.tz.setDefault("Asia/Singapore");
+
 export const getVoucher = asyncWrapper(async (req, res, next) => {
   const { id: _id } = req.params;
   const voucher = await Vouchers.findById({ _id }).exec();
-  if (!voucher)
+  if (!voucher) {
     return next(
       createError(
         httpErrorsMessage.NoVoucher.statusCode,
         httpErrorsMessage.NoVoucher.message
       )
     );
+  }
 
   const baseUrl = `${req.protocol}://${req.get("host")}`;
   return res.status(200).json({
@@ -37,7 +45,6 @@ export const getVoucher = asyncWrapper(async (req, res, next) => {
 
 export const getVouchers = asyncWrapper(async (req, res, next) => {
   const { offset, limit } = req.query;
-  // page = skip, pageSize: limit
   const skip = Number(offset) || 0,
     limitNo = Number(limit) || 10,
     page = Math.floor(skip / limitNo) + 1;
@@ -92,8 +99,8 @@ export const createVoucher = asyncWrapper(async (req, res, next) => {
 
   // Modify req.body
   voucher._id = new Types.ObjectId();
-  voucher.expiryDate = dayjs(voucher.expiryDate).toDate();
-  voucher.startDate = dayjs(voucher.startDate).toDate();
+  voucher.expiryDate = dayjs(voucher.expiryDate).add(1, "day").toDate();
+  voucher.startDate = dayjs(voucher.startDate).add(1, "day").toDate();
 
   const validationError = voucher.validateSync();
   if (validationError) {
@@ -101,6 +108,48 @@ export const createVoucher = asyncWrapper(async (req, res, next) => {
   }
   await voucher.save();
   return res.status(201).json({ msg: "Voucher has been created" });
+});
+
+export const updateVoucher = asyncWrapper(async (req, res, next) => {
+  const { id: _id } = req.params;
+  const body = req.body;
+  if (body.constructor === Object && Object.keys(body).length === 0) {
+    return next(
+      createError(
+        httpErrorsMessage.NoBody.statusCode,
+        httpErrorsMessage.NoBody.message
+      )
+    );
+  }
+
+  // When updating date, both startDate and expiryDate
+  // needs to be in the body for schema validation purposes
+  if (
+    Object.prototype.hasOwnProperty.call(body, "startDate") ||
+    Object.prototype.hasOwnProperty.call(body, "expiryDate")
+  ) {
+    body.startDate = dayjs(body.startDate).add(1, "day").toDate();
+    body.expiryDate = dayjs(body.expiryDate).add(1, "day").toDate();
+  }
+
+  const validationResult = updateSchema.validate(body);
+  if (validationResult.error) {
+    return next(createError(400, validationResult.error.details[0].message));
+  }
+
+  const voucher = await Vouchers.findByIdAndUpdate(_id, body, {
+    returnDocument: "before",
+    upsert: false,
+  });
+
+  return !voucher
+    ? next(
+        createError(
+          httpErrorsMessage.NoVoucher.statusCode,
+          httpErrorsMessage.NoVoucher.message
+        )
+      )
+    : res.status(204).json({ msg: "No content" });
 });
 
 export const deleteVoucher = asyncWrapper(async (req, res, next) => {

@@ -103,6 +103,7 @@ describe("POST /api/v1/vouchers", () => {
       .post("/api/v1/vouchers")
       .send(newVoucher)
       .set("Authorization", validToken);
+
     await Vouchers.deleteOne({
       description: newVoucher.description,
       promoCode: newVoucher.promoCode,
@@ -112,8 +113,72 @@ describe("POST /api/v1/vouchers", () => {
   });
 });
 
+describe("PATCH /api/v1/vouchers", () => {
+  it("should return not found when the id is missing", async () => {
+    const { notFound, statusCode } = await request(app)
+      .patch("/api/v1/vouchers")
+      .send({})
+      .set("Authorization", validToken);
+    expect(statusCode).toBe(404);
+    expect(notFound).toBeTruthy();
+  });
+
+  it("should return no voucher error when the id is invalid", async () => {
+    const fakeId = new Types.ObjectId();
+    const { body, notFound, statusCode } = await request(app)
+      .patch(`/api/v1/vouchers/${fakeId}`)
+      .send({ discount: 20 })
+      .set("Authorization", validToken);
+    expect(statusCode).toBe(httpErrorsMessage.NoVoucher.statusCode);
+    expect(body.msg).toBe(httpErrorsMessage.NoVoucher.message);
+    expect(notFound).toBeTruthy();
+  });
+
+  it("should return validation error when the request body is empty", async () => {
+    const fakeId = new Types.ObjectId();
+    const { badRequest, body, statusCode } = await request(app)
+      .patch(`/api/v1/vouchers/${fakeId}`)
+      .send({})
+      .set("Authorization", validToken);
+    expect(statusCode).toBe(httpErrorsMessage.NoBody.statusCode);
+    expect(body.msg).toBe(httpErrorsMessage.NoBody.message);
+    expect(badRequest).toBeTruthy();
+  });
+
+  it("should return validation error when the request body is invalid", async () => {
+    const _id = new Types.ObjectId();
+    await Vouchers.create({ ...dummyVoucher, _id });
+    const { badRequest, body, statusCode } = await request(app)
+      .patch(`/api/v1/vouchers/${_id}`)
+      .send({ category: "not a category" })
+      .set("Authorization", validToken);
+
+    await request(app)
+      .delete(`/api/v1/vouchers/${_id}`)
+      .set("Authorization", validToken);
+    expect(statusCode).toBe(400);
+    expect(body.msg).not.toBeNull();
+    expect(badRequest).toBeTruthy();
+  });
+
+  it("should update the document when both id and body are valid", async () => {
+    const _id = new Types.ObjectId();
+    await Vouchers.create({ ...dummyVoucher, _id });
+    const { noContent, statusCode } = await request(app)
+      .patch(`/api/v1/vouchers/${_id}`)
+      .send({ startDate: "2023-01-01", expiryDate: "2024-04-04" })
+      .set("Authorization", validToken);
+
+    await request(app)
+      .delete(`/api/v1/vouchers/${_id}`)
+      .set("Authorization", validToken);
+    expect(statusCode).toBe(204);
+    expect(noContent).toBeTruthy();
+  });
+});
+
 describe("DELETE /api/v1/vouchers/:id", () => {
-  it("should return not found erorr when the id is not provided", async () => {
+  it("should return not found error when the id is not provided", async () => {
     const { body, notFound, statusCode } = await request(app)
       .delete("/api/v1/vouchers")
       .set("Authorization", validToken);
@@ -145,7 +210,6 @@ describe("DELETE /api/v1/vouchers/:id", () => {
   it("should delete voucher when the id is valid", async () => {
     const _id = new Types.ObjectId();
     await Vouchers.create({ ...dummyVoucher, _id });
-
     const { noContent, statusCode } = await request(app)
       .delete(`/api/v1/vouchers/${_id}`)
       .set("Authorization", validToken);

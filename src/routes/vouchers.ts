@@ -3,6 +3,7 @@ import {
   deleteVoucher,
   getVoucher,
   getVouchers,
+  updateVoucher,
 } from "../controllers/vouchers";
 import authenticationMiddleware from "../middleware/auth";
 import { Router } from "express";
@@ -14,7 +15,8 @@ router
   .post(authenticationMiddleware, createVoucher);
 router
   .route("/:id")
+  .delete(authenticationMiddleware, deleteVoucher)
   .get(authenticationMiddleware, getVoucher)
-  .delete(authenticationMiddleware, deleteVoucher);
+  .patch(authenticationMiddleware, updateVoucher);
 
 export default router;
