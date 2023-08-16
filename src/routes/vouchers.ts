@@ -4,8 +4,8 @@ import {
   getVoucher,
   getVouchers,
   updateVoucher,
-} from "../controllers/vouchers";
-import authenticationMiddleware from "../middleware/auth";
+} from "../controllers/vouchers.js";
+import authenticationMiddleware from "../middleware/auth.js";
 import { Router } from "express";
 
 const router = Router();

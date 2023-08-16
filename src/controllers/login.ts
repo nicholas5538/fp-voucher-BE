@@ -1,7 +1,7 @@
 import createError from "http-errors";
 import jwt from "jsonwebtoken";
-import { tokenSchema } from "../constants/joi-schema";
-import asyncWrapper from "../middleware/async";
+import { tokenSchema } from "../constants/joi-schema.js";
+import asyncWrapper from "../middleware/async.js";
 
 const login = asyncWrapper(async (req, res, next) => {
   const { email, name } = req.body;

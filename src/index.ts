@@ -1,5 +1,5 @@
-import app from "./app";
-import connectDb from "./db/connect";
+import app from "./app.js";
+import connectDb from "./db/connect.js";
 
 const port = process.env.PORT || 3001;
 const uri = process.env.MONGO_URI || "";

@@ -1,4 +1,4 @@
-import { expressFn } from "../constants/type-interface";
+import { expressFn } from "../constants/type-interface.js";
 import createError from "http-errors";
 
 const notFound: expressFn<void> = (_req, _res, next) =>

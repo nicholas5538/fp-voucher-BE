@@ -1,5 +1,5 @@
 import { model, Schema, Types } from "mongoose";
-import type { Tvouchers } from "../constants/type-interface";
+import type { Tvouchers } from "../constants/type-interface.js";
 
 const vouchersSchema = new Schema<Tvouchers>({
   _id: Types.ObjectId,

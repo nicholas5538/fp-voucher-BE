@@ -1,7 +1,7 @@
 import createError from "http-errors";
 import jwt from "jsonwebtoken";
-import asyncWrapper from "./async";
-import httpErrorsMessage from "../constants/error-messages";
+import asyncWrapper from "./async.js";
+import httpErrorsMessage from "../constants/error-messages.js";
 
 const authenticationMiddleware = asyncWrapper(async (req, _res, next) => {
   const { authorization } = req.headers;
