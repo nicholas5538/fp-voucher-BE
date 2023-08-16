@@ -8,8 +8,7 @@
   "private": true,
   "type": "module",
   "scripts": {
-    "build": "tsc --build",
-    "clean": "tsc --build --clean",
+    "build": "tsc --project tsconfig.build.json",
     "dev": "npx nodemon",
     "format": "npx prettier . --check",
     "format:fix": "npx prettier . --write",
