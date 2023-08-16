@@ -1,12 +1,12 @@
 import dayjs from "dayjs";
-import utc from "dayjs/plugin/utc";
-import timezone from "dayjs/plugin/timezone";
+import utc from "dayjs/plugin/utc.js";
+import timezone from "dayjs/plugin/timezone.js";
 import createError from "http-errors";
 import { Types } from "mongoose";
-import { updateSchema } from "../constants/joi-schema";
-import httpErrorsMessage from "../constants/error-messages";
-import asyncWrapper from "../middleware/async";
-import Vouchers from "../models/vouchers";
+import { updateSchema } from "../constants/joi-schema.js";
+import httpErrorsMessage from "../constants/error-messages.js";
+import asyncWrapper from "../middleware/async.js";
+import Vouchers from "../models/vouchers.js";
 
 type Tlinks = {
   base: string;

@@ -2,9 +2,9 @@ import { config } from "dotenv";
 import { disconnect } from "mongoose";
 import jwt from "jsonwebtoken";
 import request from "supertest";
-import app from "../app";
-import httpErrorsMessage from "../constants/error-messages";
-import connectDb from "../db/connect";
+import app from "../app.js";
+import httpErrorsMessage from "../constants/error-messages.js";
+import connectDb from "../db/connect.js";
 
 config();
 

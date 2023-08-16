@@ -1,5 +1,5 @@
 import request from "supertest";
-import app from "../app";
+import app from "../app.js";
 
 const dummyBody: Readonly<{ [key: string]: string }> = {
   email: "12345@gmail.com",

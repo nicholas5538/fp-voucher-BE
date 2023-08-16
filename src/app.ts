@@ -1,9 +1,9 @@
 import { config } from "dotenv";
 import express, { type Application } from "express";
-import errorHandlerMiddleware from "./middleware/error-handler";
-import notFound from "./middleware/not-found";
-import loginRouter from "./routes/login";
-import voucherRouter from "./routes/vouchers";
+import errorHandlerMiddleware from "./middleware/error-handler.js";
+import notFound from "./middleware/not-found.js";
+import loginRouter from "./routes/login.js";
+import voucherRouter from "./routes/vouchers.js";
 
 config();
 const app: Application = express();

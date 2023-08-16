@@ -1,6 +1,6 @@
-import type { Config } from "jest";
+import type { JestConfigWithTsJest } from "ts-jest";
 
-const config: Config = {
+const config: JestConfigWithTsJest = {
   clearMocks: true,
   collectCoverage: true,
   coverageDirectory: "coverage",
@@ -12,10 +12,21 @@ const config: Config = {
   ],
   coverageProvider: "v8",
   coverageReporters: ["json", "text", "lcov", "clover"],
+  extensionsToTreatAsEsm: [".ts"],
   moduleFileExtensions: ["js", "ts"],
-  preset: "ts-jest",
+  moduleNameMapper: {
+    "^(\\.{1,2}/.*)\\.js$": "$1",
+  },
   roots: ["<rootDir>/src"],
   testEnvironment: "node",
+  transform: {
+    "^.+\\.[tj]sx?$": [
+      "ts-jest",
+      {
+        useESM: true,
+      },
+    ],
+  },
   verbose: true,
   watchPathIgnorePatterns: [
     "/node_modules/",

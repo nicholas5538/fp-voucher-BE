@@ -1,5 +1,5 @@
 import type { Request, Response, NextFunction } from "express";
-import { expressFn } from "../constants/type-interface";
+import { expressFn } from "../constants/type-interface.js";
 
 const asyncWrapper = (fn: expressFn<Promise<any>>) => {
   return async (

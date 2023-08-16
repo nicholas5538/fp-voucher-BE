@@ -1,7 +1,8 @@
 {
   "compilerOptions": {
     "target": "ESNext",
-    "module": "ESNext",
+    "module": "NodeNext",
+    "moduleResolution": "NodeNext",
     "esModuleInterop": true,
     "forceConsistentCasingInFileNames": true,
     "strict": true,
@@ -10,9 +11,9 @@
     "noUnusedLocals": true,
     "noUnusedParameters": true,
     "skipLibCheck": true,
-    "outDir": "build",
-    "rootDir": "src",
-    "moduleResolution": "node"
+    "rootDir": "./src",
+    "outDir": "./dist",
+    "sourceMap": true
   },
   "ts-node": {
     "esm": true,

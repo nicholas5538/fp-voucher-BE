@@ -6,7 +6,6 @@ npm-debug.log*
 # Dependency directory
 **/node_modules/**
 _node_modules
-.pnp.cjs
 
 # Coverage directory used by tools like istanbul
 coverage
@@ -23,13 +22,10 @@ tsconfig.tsbuildinfo
 
 # JetBrains IDEs
 .idea/
-
-package-lock.json
 __package_previews__
 .store
 privatePackages/store
 storage
-yarn.lock
 RELEASE.md
 .jest-cache
 .verdaccio-cache
