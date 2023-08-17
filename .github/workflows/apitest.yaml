@@ -33,4 +33,4 @@ jobs:
         run: docker build -t test-api --target test .
 
       - name: Run tests in Docker container
-        run: docker run --env-file .env -it --rm --name run-api-test test-api
+        run: docker run --env-file .env --rm --name run-api-test test-api
