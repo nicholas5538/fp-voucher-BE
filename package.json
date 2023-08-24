@@ -55,6 +55,7 @@
     "lint-staged": "13.2.3",
     "nodemon": "3.0.1"
   },
+  "packageManager": "pnpm@8.6.12",
   "lint-staged": {
     "*.ts": "eslint",
     "**/*": "prettier --write --ignore-unknown"
