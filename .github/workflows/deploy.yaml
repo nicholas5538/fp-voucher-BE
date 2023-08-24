@@ -1,6 +1,7 @@
 ---
 name: Deploy to production
 env:
+  DEPLOY_HOOK: ${{ secrets.DEPLOY_HOOK }}
   DOCKER_TOKEN: ${{ secrets.DOCKER_TOKEN }}
   DOCKER_USERNAME: ${{ secrets.DOCKER_USERNAME }}
   JWT_SECRET: ${{ secrets.JWT_SECRET }}
@@ -10,7 +11,7 @@ env:
   PORT: ${{ secrets.PORT }}
 
 on:
-  pull_request:
+  push:
     branches:
       - main
     paths-ignore:
@@ -39,3 +40,7 @@ jobs:
           docker build --platform linux/amd64 -t fp-capstone-backend .
           docker tag fp-capstone-backend:latest ${DOCKER_USERNAME}/fp-capstone-backend:latest
           docker push ${DOCKER_USERNAME}/fp-capstone-backend:latest
+
+      - name: Trigger Render deployment
+        run: |
+          curl -X POST -d {} ${DEPLOY_HOOK}
