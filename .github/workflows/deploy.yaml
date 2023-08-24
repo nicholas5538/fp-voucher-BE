@@ -4,11 +4,6 @@ env:
   DEPLOY_HOOK: ${{ secrets.DEPLOY_HOOK }}
   DOCKER_TOKEN: ${{ secrets.DOCKER_TOKEN }}
   DOCKER_USERNAME: ${{ secrets.DOCKER_USERNAME }}
-  JWT_SECRET: ${{ secrets.JWT_SECRET }}
-  JWT_EXPIRES_IN: ${{ secrets.JWT_EXPIRES_IN }}
-  MONGO_COLLECTION: ${{ secrets.MONGO_COLLECTION }}
-  MONGO_URI: ${{ secrets.MONGO_URI }}
-  PORT: ${{ secrets.PORT }}
 
 on:
   push:
@@ -26,14 +21,6 @@ jobs:
 
       - name: Login to Docker Hub
         run: docker login -u ${DOCKER_USERNAME} -p ${DOCKER_TOKEN}
-
-      - name: Write secrets to env file
-        run: |
-          echo "JWT_SECRET=${JWT_SECRET}" > .env
-          echo "JWT_EXPIRES_IN=${JWT_EXPIRES_IN}" >> .env
-          echo "MONGO_COLLECTION=${MONGO_COLLECTION}" >> .env
-          echo "MONGO_URI=${MONGO_URI}" >> .env
-          echo "PORT=${PORT}" >> .env
 
       - name: Build and push Docker image
         run: |
