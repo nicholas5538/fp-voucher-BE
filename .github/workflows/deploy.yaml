@@ -1,0 +1,46 @@
+---
+name: Deploy to production
+env:
+  DEPLOY_HOOK: ${{ secrets.DEPLOY_HOOK }}
+  DOCKER_TOKEN: ${{ secrets.DOCKER_TOKEN }}
+  DOCKER_USERNAME: ${{ secrets.DOCKER_USERNAME }}
+  JWT_SECRET: ${{ secrets.JWT_SECRET }}
+  JWT_EXPIRES_IN: ${{ secrets.JWT_EXPIRES_IN }}
+  MONGO_COLLECTION: ${{ secrets.MONGO_COLLECTION }}
+  MONGO_URI: ${{ secrets.MONGO_URI }}
+  PORT: ${{ secrets.PORT }}
+
+on:
+  push:
+    branches:
+      - main
+    paths-ignore:
+      - "**.md"
+
+jobs:
+  Deployment:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3.5.3
+
+      - name: Login to Docker Hub
+        run: docker login -u ${DOCKER_USERNAME} -p ${DOCKER_TOKEN}
+
+      - name: Write secrets to env file
+        run: |
+          echo "JWT_SECRET=${JWT_SECRET}" > .env
+          echo "JWT_EXPIRES_IN=${JWT_EXPIRES_IN}" >> .env
+          echo "MONGO_COLLECTION=${MONGO_COLLECTION}" >> .env
+          echo "MONGO_URI=${MONGO_URI}" >> .env
+          echo "PORT=${PORT}" >> .env
+
+      - name: Build and push Docker image
+        run: |
+          docker build --platform linux/amd64 -t fp-capstone-backend .
+          docker tag fp-capstone-backend:latest ${DOCKER_USERNAME}/fp-capstone-backend:latest
+          docker push ${DOCKER_USERNAME}/fp-capstone-backend:latest
+
+      - name: Trigger Render deployment
+        run: |
+          curl -X POST -d {} ${DEPLOY_HOOK}
