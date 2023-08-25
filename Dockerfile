@@ -20,7 +20,7 @@ CMD [ "pnpm", "run", "dev" ]
 FROM base AS production
 RUN npm pkg delete scripts.prepare
 RUN --mount=type=cache,id=pnpm,target=/pnpm/store pnpm install --prod --frozen-lockfile
-RUN pnpm run build
+RUN pnpm run build:prod
 
 FROM base AS test
 RUN --mount=type=cache,id=pnpm,target=/pnpm/store pnpm install --frozen-lockfile
