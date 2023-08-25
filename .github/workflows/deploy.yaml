@@ -12,11 +12,18 @@ jobs:
   Deployment:
     runs-on: ubuntu-latest
     env:
-      DEPLOY_HOOK: ${{ secrets.DEPLOY_HOOK }}
       DOCKERHUB_USERNAME: ${{ secrets.DOCKERHUB_USERNAME }}
     steps:
       - name: Checkout
         uses: actions/checkout@v3.5.3
+
+      - name: Write secrets to env file
+        run: |
+          echo "JWT_SECRET=${{ secrets.JWT_SECRET }}" > .env.production
+          echo "JWT_EXPIRES_IN=${{ secrets.JWT_EXPIRES_IN }}" >> .env.production
+          echo "MONGO_COLLECTION=${{ secrets.MONGO_COLLECTION }}" >> .env.production
+          echo "MONGO_URI= ${{ secrets.MONGO_URI }}" >> .env.production
+          echo "PORT=${{ secrets.PORT }}" >> .env.production
 
       - name: Login to Docker Hub
         uses: docker/login-action@v2.2.0
@@ -32,4 +39,4 @@ jobs:
 
       - name: Trigger Render deployment
         run: |
-          curl -X POST -d {} $DEPLOY_HOOK
+          curl -X POST -d {} "${{ secrets.DEPLOY_HOOK }}"

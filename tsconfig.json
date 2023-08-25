@@ -20,5 +20,5 @@
     "experimentalSpecifierResolution": "node"
   },
   "include": ["src/**/*.ts"],
-  "exclude": ["node_modules", "src/tests/*.test.ts"]
+  "exclude": ["node_modules"]
 }
