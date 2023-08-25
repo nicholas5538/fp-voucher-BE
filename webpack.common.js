@@ -16,7 +16,7 @@ const common = {
       {
         test: /\.ts$/,
         use: "ts-loader",
-        exclude: /(node_modules|\.test\.ts$)/,
+        exclude: /(node_modules|\/(tests)\/)/,
       },
     ],
   },
