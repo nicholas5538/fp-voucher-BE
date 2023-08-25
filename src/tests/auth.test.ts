@@ -3,6 +3,7 @@ import { disconnect } from "mongoose";
 import jwt from "jsonwebtoken";
 import request from "supertest";
 import app from "../app.js";
+import { dummyBody } from "./common.js";
 import httpErrorsMessage from "../constants/error-messages.js";
 import connectDb from "../db/connect.js";
 
@@ -16,11 +17,6 @@ beforeAll(
     })
 );
 afterAll(async () => await disconnect());
-
-const dummyBody: Readonly<{ [key: string]: string }> = {
-  email: "12345@gmail.com",
-  name: "Nick",
-};
 
 describe("Test JWT verification middleware", () => {
   it("should deny access with an expired token", async () => {
@@ -68,9 +64,8 @@ describe("Test JWT verification middleware", () => {
   });
 
   it("should deny access without a token", async () => {
-    const { body, statusCode, unauthorized } = await request(app).get(
-      "/api/v1/vouchers"
-    );
+    const { body, statusCode, unauthorized } =
+      await request(app).get("/api/v1/vouchers");
     expect(statusCode).toBe(httpErrorsMessage.NoToken.statusCode);
     expect(body.msg).toBe(httpErrorsMessage.NoToken.message);
     expect(unauthorized).toBeTruthy();
