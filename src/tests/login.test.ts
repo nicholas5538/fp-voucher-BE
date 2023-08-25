@@ -1,10 +1,9 @@
+import { config } from "dotenv";
 import request from "supertest";
 import app from "../app.js";
+import { dummyBody } from "./common.js";
 
-const dummyBody: Readonly<{ [key: string]: string }> = {
-  email: "12345@gmail.com",
-  name: "Nick",
-};
+config();
 
 describe("POST /user endpoint", () => {
   it("should return 400 when email is not provided", async () => {
