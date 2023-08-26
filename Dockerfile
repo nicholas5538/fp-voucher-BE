@@ -15,18 +15,19 @@ WORKDIR /app
 FROM base AS development
 RUN --mount=type=cache,id=pnpm,target=/pnpm/store pnpm install --frozen-lockfile
 EXPOSE 3500
-CMD [ "pnpm", "run", "dev" ]
+CMD ["pnpm", "run", "dev"]
 
 FROM base AS production
 RUN npm pkg delete scripts.prepare
 RUN --mount=type=cache,id=pnpm,target=/pnpm/store pnpm install --prod --frozen-lockfile
-RUN pnpm run build:prod
 
 FROM base AS test
 RUN --mount=type=cache,id=pnpm,target=/pnpm/store pnpm install --frozen-lockfile
-CMD [ "pnpm", "run", "test" ]
+CMD ["pnpm", "run", "test"]
 
 FROM base
-COPY --from=production /app/node_modules /app/node_modules
+ENV NODE_ENV production
 EXPOSE 3500
-CMD [ "pnpm", "start" ]
+COPY --from=production /app/node_modules /app/node_modules
+RUN pnpm run build:prod
+CMD ["node", "run-main.js"]

@@ -90,6 +90,7 @@ export const getVouchers = asyncWrapper(async (req, res, next) => {
     page,
     results: vouchers,
     start: skip,
+    totalVouchers,
     "X-Total-count": totalVoucherQuery,
   });
 });
