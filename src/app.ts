@@ -1,3 +1,4 @@
+import cors from "cors";
 import express, { type Application } from "express";
 import errorHandlerMiddleware from "./middleware/error-handler.js";
 import notFound from "./middleware/not-found.js";
@@ -8,6 +9,7 @@ const app: Application = express();
 
 // Middleware
 app.use(express.json());
+app.use(cors());
 
 // Routes
 app.use("/user", loginRouter);
