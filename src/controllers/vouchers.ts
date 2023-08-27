@@ -126,14 +126,14 @@ export const updateVoucher = asyncWrapper(async (req, res, next) => {
   // When updating date, both startDate and expiryDate
   // needs to be in the body for schema validation purposes
   if (
-    Object.prototype.hasOwnProperty.call(body, "startDate") ||
-    Object.prototype.hasOwnProperty.call(body, "expiryDate")
+    Object.keys(body).includes("startDate") ||
+    Object.keys(body).includes("expiryDate")
   ) {
     body.startDate = dayjs(body.startDate).add(1, "day").toDate();
     body.expiryDate = dayjs(body.expiryDate).add(1, "day").toDate();
   }
 
-  const validationResult = updateSchema.validate(body);
+  const validationResult = updateSchema.validate(body, { convert: false });
   if (validationResult.error) {
     return next(createError(400, validationResult.error.details[0].message));
   }
