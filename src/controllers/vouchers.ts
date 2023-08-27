@@ -100,8 +100,6 @@ export const createVoucher = asyncWrapper(async (req, res, next) => {
 
   // Modify req.body
   voucher._id = new Types.ObjectId();
-  voucher.expiryDate = dayjs(voucher.expiryDate).add(1, "day").toDate();
-  voucher.startDate = dayjs(voucher.startDate).add(1, "day").toDate();
 
   const validationError = voucher.validateSync();
   if (validationError) {
@@ -123,18 +121,9 @@ export const updateVoucher = asyncWrapper(async (req, res, next) => {
     );
   }
 
-  // When updating date, both startDate and expiryDate
-  // needs to be in the body for schema validation purposes
-  if (
-    Object.prototype.hasOwnProperty.call(body, "startDate") ||
-    Object.prototype.hasOwnProperty.call(body, "expiryDate")
-  ) {
-    body.startDate = dayjs(body.startDate).add(1, "day").toDate();
-    body.expiryDate = dayjs(body.expiryDate).add(1, "day").toDate();
-  }
-
-  const validationResult = updateSchema.validate(body);
+  const validationResult = updateSchema.validate(body, { convert: true });
   if (validationResult.error) {
+    console.log(validationResult.error);
     return next(createError(400, validationResult.error.details[0].message));
   }
 

@@ -34,7 +34,7 @@ export const updateSchema = Joi.object({
   description: Joi.string()
     .min(4)
     .max(30)
-    .pattern(/^[a-zA-Z0-9%$ -]+$/)
+    .pattern(/^[a-zA-Z0-9\s'@]*$/)
     .trim()
     .messages({
       "string.empty": "Description should not be empty",
@@ -54,10 +54,11 @@ export const updateSchema = Joi.object({
       "number.base": "No decimal is allowed",
       "number.positive": "Only positive integers are allowed",
     }),
-  minSpending: Joi.number().max(100).default(0).integer().positive().messages({
+  minSpending: Joi.number().min(0).max(100).precision(2).default(0).messages({
+    "number.min": "Minimum spending must be $0 and above",
     "number.max": "Minimum spending must not exceed $100",
+    "number.precision": "Only up to 2 decimal places are allowed",
     "number.base": "No decimal is allowed",
-    "number.positive": "Minimum spending must be $0 and above",
   }),
   promoCode: Joi.string()
     .min(4)
