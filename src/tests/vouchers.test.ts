@@ -19,7 +19,7 @@ const dummyVoucher: Omit<Tvouchers, keyof Document> & Pick<Tvouchers, "_id"> = {
   category: "Pick-up",
   description: "API test only",
   discount: 10,
-  minSpending: 0,
+  minSpending: new Types.Decimal128("0"),
   promoCode: "APITEST10",
   startDate: new Date(),
   expiryDate: new Date(new Date().getTime() + 7 * 24 * 60 * 60 * 1000),
