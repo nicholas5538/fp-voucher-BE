@@ -2,32 +2,38 @@ FROM node:20-bookworm-slim AS base
 LABEL authors="nicholas5538"
 LABEL version="1.0"
 
-# Install pnpm
-RUN npm install -g pnpm
-
-# Copy the application files
-COPY . /app/
-
-# Set the working directory
+COPY . /app
 WORKDIR /app
 
-# Install dependencies
-FROM base AS development
-RUN --mount=type=cache,id=pnpm,target=/pnpm/store pnpm install --frozen-lockfile
-EXPOSE 3500
-CMD ["pnpm", "run", "dev"]
+# Install pnpm
+RUN yarn global add pnpm
 
-FROM base AS production
+# Install dependencies
+FROM base AS dev
+RUN --mount=type=cache,id=pnpm,target=/pnpm/store pnpm i --frozen-lockfile
+
+FROM base as prod-dev
 RUN npm pkg delete scripts.prepare
-RUN --mount=type=cache,id=pnpm,target=/pnpm/store pnpm install --prod --frozen-lockfile
+RUN --mount=type=cache,id=pnpm,target=/pnpm/store pnpm i --prod --frozen-lockfile
+
+FROM base AS build
+COPY --from=prod-dev /app/node_modules ./node_modules
+RUN pnpm run build:prod
 
 FROM base AS test
-RUN --mount=type=cache,id=pnpm,target=/pnpm/store pnpm install --frozen-lockfile
+COPY --from=dev /app/node_modules ./node_modules
 CMD ["pnpm", "run", "test"]
 
-FROM base
+FROM base AS prod
 ENV NODE_ENV production
 EXPOSE 3500
-COPY --from=production /app/node_modules /app/node_modules
-RUN pnpm run build:prod
+
+RUN chown -R node:node .
+
+COPY --from=build /app/dist ./dist
+COPY --from=build /app/node_modules ./node_modules
+COPY --from=build --chown=nodejs:nodejs /app/run-main.js run-main.js
+
+USER node
+
 CMD ["node", "run-main.js"]
