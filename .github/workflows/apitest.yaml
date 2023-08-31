@@ -19,7 +19,17 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
-        uses: actions/checkout@v3.5.3
+        uses: actions/checkout@v3.6.0
+
+      - name: Install pnpm
+        run: npm -g install pnpm
+
+      - name: Setup Node environment
+        uses: actions/setup-node@v3.8.1
+        with:
+          node-version: 18
+          cache: "pnpm"
+          cache-dependency-path: pnpm-lock.yaml
 
       - name: Write secrets to env file
         run: |
@@ -29,8 +39,15 @@ jobs:
           echo "MONGO_URI=${MONGO_URI}" >> .env
           echo "PORT=${PORT}" >> .env
 
-      - name: Build Docker image
-        run: docker build --no-cache -t test-api --target test .
+      - name: Install dependencies
+        run: pnpm i --frozen-lockfile
 
-      - name: Run tests in Docker container
-        run: docker run --env-file .env --rm --name run-api-test test-api
+      - name: Run coverage test
+        run: pnpm run test:cov
+
+      - name: Upload to codecov
+        uses: codecov/codecov-action@v3.1.4
+        with:
+          token: ${{ secrets.CODECOV_TOKEN }}
+          fail_ci_if_error: true
+          verbose: true
