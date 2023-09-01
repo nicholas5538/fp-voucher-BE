@@ -1,5 +1,7 @@
 # 🏷️ FP capstone (BE)
 
+[![codecov](https://codecov.io/gh/nicholas5538/fp-voucher-BE/graph/badge.svg?token=7QBFKXF928)](https://codecov.io/gh/nicholas5538/fp-voucher-BE)
+
 ## Table Of Contents
 
 - [Quick Links](#quick-links)
@@ -68,7 +70,7 @@ git clone https://github.com/nicholas5538/fp-voucher-BE.git
 cd fp-voucher-BE
 ```
 
-Create a `.env.development` or `.env` file to store environment variables, please request secret keys from [@nicholas5538](https://github.com/nicholas5538 "nicholas5538 GitHub profile").
+Create a `.env.dev` file to store environment variables, please request secret keys from [@nicholas5538](https://github.com/nicholas5538 "nicholas5538 GitHub profile").
 
 ```zsh
 JWT_SECRET=<Insert a 64-bit JWT secret key here>
@@ -85,10 +87,14 @@ Once you have [set up the repo](#repository-setup), you're ready to start develo
 - With **Docker (recommended)**
 
 ```sh
-# Build your own image
+# With Docker compose, you're able
+# to see live changes after refreshing
+docker compose up --env-file .env.dev -d --build
+
+# Or build your own image
 docker build --compress -t <image name> --target dev .
-# For Windows PowerShell: ${pwd}, MacOS: $(pwd)
-docker run -d -p 3000:3000 -v $(pwd):/home/node/app --name <container name> <image name>
+# For Windows PowerShell: ${pwd}, : $(pwd)
+docker run -d -p 3000:3000 -v .:/app -v /app/node_modules --name <container name> <image name>
 ```
 
 - With **pnpm**
