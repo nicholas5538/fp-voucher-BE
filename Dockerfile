@@ -12,6 +12,12 @@ RUN yarn global add pnpm
 FROM base AS dev
 RUN --mount=type=cache,id=pnpm,target=/pnpm/store pnpm i --frozen-lockfile
 
+EXPOSE 3500
+ENV PORT 3500
+ENV HOSTNAME "0.0.0.0"
+
+CMD ["pnpm", "run", "dev"]
+
 FROM base as prod-dev
 RUN npm pkg delete scripts.prepare
 RUN --mount=type=cache,id=pnpm,target=/pnpm/store pnpm i --prod --frozen-lockfile

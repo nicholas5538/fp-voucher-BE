@@ -1,0 +1,16 @@
+version: "3.8"
+services:
+  devmode:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      target: dev
+    container_name: api-dev
+    command: pnpm run dev
+    restart: always
+    ports:
+      - "3500:3500"
+    volumes:
+      - .:/app
+      - /app/node_modules
+      - /app/dist
