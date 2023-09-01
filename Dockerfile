@@ -1,4 +1,4 @@
-FROM node:20-bookworm-slim AS base
+FROM node:current-alpine3.18 AS base
 LABEL authors="nicholas5538"
 LABEL version="1.0"
 
@@ -19,10 +19,6 @@ RUN --mount=type=cache,id=pnpm,target=/pnpm/store pnpm i --prod --frozen-lockfil
 FROM base AS build
 COPY --from=prod-dev /app/node_modules ./node_modules
 RUN pnpm run build:prod
-
-FROM base AS test
-COPY --from=dev /app/node_modules ./node_modules
-CMD ["pnpm", "run", "test"]
 
 FROM base AS prod
 ENV NODE_ENV production
