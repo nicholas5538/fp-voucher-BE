@@ -110,9 +110,10 @@ The `dev` command will start the application in your local environment (port 517
 
 ### GET request
 
-1. https://fp-capstone-backend.onrender/api/v1/vouchers
+<details>
+    <summary>1. https://fp-capstone-backend.onrender/api/v1/vouchers</summary>
 
-   Obtain all vouchers with pagination options
+Obtain all vouchers with pagination options
 
 - Queries (Optional)
 
@@ -163,9 +164,12 @@ The `dev` command will start the application in your local environment (port 517
   }
   ```
 
-2. https://fp-capstone-backend.onrender/api/v1/vouchers/{voucherId}
+  </details>
 
-   Obtain a single voucher based on the voucher id defined on the URL
+<details>
+    <summary>2. https://fp-capstone-backend.onrender/api/v1/vouchers/{voucherId}</summary>
+
+Obtain a single voucher based on the voucher id defined on the URL
 
 - Parameter
 
@@ -184,7 +188,7 @@ The `dev` command will start the application in your local environment (port 517
     https://fp-capstone-backend.onrender/api/v1/vouchers/1234
   ```
 
-  - Response (HTTP 200)
+- Response (HTTP 200)
 
   ```json
   {
@@ -206,11 +210,14 @@ The `dev` command will start the application in your local environment (port 517
   }
   ```
 
+  </details>
+
 ### POST request
 
-1. https://fp-capstone-backend.onrender/users
+<details>
+    <summary>1. https://fp-capstone-backend.onrender/users</summary>
 
-   You will obtain a JWT that allows you to access all the other API endpoints
+You will obtain a JWT that allows you to access all the other API endpoints
 
 - Request body (required)
 
@@ -237,21 +244,24 @@ The `dev` command will start the application in your local environment (port 517
   }
   ```
 
-2. https://fp-capstone-backend.onrender/api/v1/vouchers
+  </details>
 
-   Creates a voucher and store it in the database
+<details>
+    <summary>2. https://fp-capstone-backend.onrender/api/v1/vouchers</summary>
 
-   - Request body (required)
+Creates a voucher and store it in the database
 
-   | Key         | Value                                                    | Type                |
-   | ----------- | -------------------------------------------------------- | ------------------- |
-   | category    | "Pick-up", "Delivery", "Dine-in", "Pandamart", "Pandago" | String              |
-   | description | "10% off on Subway                                       | String              |
-   | discount    | 10                                                       | Number              |
-   | minSpending | 0                                                        | Number              |
-   | promoCode   | SUBWAY10                                                 | String              |
-   | expiryDate  | 2023-10-20                                               | String (YYYY-MM-DD) |
-   | startDate   | 2023-08-10                                               | String (YYYY-MM-DD) |
+- Request body (required)
+
+| Key         | Value                                                    | Type                |
+| ----------- | -------------------------------------------------------- | ------------------- |
+| category    | "Pick-up", "Delivery", "Dine-in", "Pandamart", "Pandago" | String              |
+| description | "10% off on Subway                                       | String              |
+| discount    | 10                                                       | Number              |
+| minSpending | 0                                                        | Number              |
+| promoCode   | SUBWAY10                                                 | String              |
+| expiryDate  | 2023-10-20                                               | String (YYYY-MM-DD) |
+| startDate   | 2023-08-10                                               | String (YYYY-MM-DD) |
 
 - Making a request
 
@@ -269,12 +279,14 @@ The `dev` command will start the application in your local environment (port 517
   ```json
   { "msg": "Voucher has been created" }
   ```
+  </details>
 
 ### PATCH request
 
-1. https://fp-capstone-backend.onrender/api/v1/vouchers/{voucherId}
+<details>
+    <summary>https://fp-capstone-backend.onrender/api/v1/vouchers/{voucherId}</summary>
 
-   Updates the voucher without modifying the entire data if it's not necessary
+Updates the voucher without modifying the entire data if it's not necessary
 
 - Parameter
 
@@ -308,17 +320,20 @@ The `dev` command will start the application in your local environment (port 517
     https://fp-capstone-backend.onrender/api/v1/vouchers/1234
   ```
 
-- Response
+- Response (HTTP 204)
 
   ```http request
   204 No Content
   ```
 
+  </details>
+
 ### DELETE request
 
-1. https://fp-capstone-backend.onrender/api/v1/vouchers/{voucherId}
+<details>
+    <summary>https://fp-capstone-backend.onrender/api/v1/vouchers/{voucherId}</summary>
 
-   Deletes the voucher from the database
+Deletes the voucher from the database
 
 - Parameter
 
@@ -337,11 +352,13 @@ The `dev` command will start the application in your local environment (port 517
     https://fp-capstone-backend.onrender/api/v1/vouchers/1234
   ```
 
-- Response
+- Response (HTTP 204)
 
   ```http request
   204 No Content
   ```
+
+  </details>
 
 ## Additional Documentations
 
