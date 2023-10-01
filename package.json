@@ -34,7 +34,7 @@
     "http-errors": "2.0.0",
     "joi": "17.10.2",
     "jsonwebtoken": "9.0.2",
-    "mongoose": "7.5.2",
+    "mongoose": "7.5.3",
     "ts-loader": "9.4.4",
     "typescript": "5.2.2",
     "webpack": "5.88.2",
