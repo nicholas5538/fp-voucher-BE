@@ -8,3 +8,7 @@ coverage
 .gitignore
 *.md
 dist
+.env*
+.flaskenv*
+!.env.project
+!.env.vault

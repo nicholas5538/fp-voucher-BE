@@ -1,4 +1,4 @@
-import { config } from "dotenv";
+import "dotenv/config";
 import { disconnect } from "mongoose";
 import jwt from "jsonwebtoken";
 import request from "supertest";
@@ -6,8 +6,6 @@ import app from "../app.js";
 import { dummyBody } from "./common.js";
 import httpErrorsMessage from "../constants/error-messages.js";
 import connectDb from "../db/connect.js";
-
-config();
 
 beforeAll(
   async () =>
