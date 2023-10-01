@@ -30,4 +30,7 @@ RELEASE.md
 .jest-cache
 .verdaccio-cache
 .turbo
-.env
+.env*
+.flaskenv*
+!.env.project
+!.env.vault
