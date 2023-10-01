@@ -70,7 +70,15 @@ git clone https://github.com/nicholas5538/fp-voucher-BE.git
 cd fp-voucher-BE
 ```
 
-Create a `.env.dev` file to store environment variables, please request secret keys from [@nicholas5538](https://github.com/nicholas5538 "nicholas5538 GitHub profile").
+2 methods of obtaining environment variables
+
+1. Using [dotenv-vault](https://github.com/dotenv-org/dotenv-vault#pull "dotenv-vault GitHub repository") (Needs to be installed locally)
+
+```zsh
+npx dotenv-vault@latest pull development .env
+```
+
+2. Create a `.env` file to store environment variables, please request secret keys from [@nicholas5538](https://github.com/nicholas5538 "nicholas5538 GitHub profile").
 
 ```zsh
 JWT_SECRET=<Insert a 64-bit JWT secret key here>
@@ -89,7 +97,7 @@ Once you have [set up the repo](#repository-setup), you're ready to start develo
 ```sh
 # With Docker compose, you're able
 # to see live changes after refreshing
-docker compose up --env-file .env.dev -d --build
+docker compose up --env-file .env -d --build
 
 # Or build your own image
 docker build --compress -t <image name> --target dev .
