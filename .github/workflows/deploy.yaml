@@ -15,18 +15,10 @@ jobs:
       DOCKERHUB_USERNAME: ${{ secrets.DOCKERHUB_USERNAME }}
     steps:
       - name: Checkout
-        uses: actions/checkout@v3.5.3
-
-      - name: Write secrets to env file
-        run: |
-          echo "JWT_SECRET=${{ secrets.JWT_SECRET }}" > .env.production
-          echo "JWT_EXPIRES_IN=${{ secrets.JWT_EXPIRES_IN }}" >> .env.production
-          echo "MONGO_COLLECTION=${{ secrets.MONGO_COLLECTION }}" >> .env.production
-          echo "MONGO_URI= ${{ secrets.MONGO_URI }}" >> .env.production
-          echo "PORT=${{ secrets.PORT }}" >> .env.production
+        uses: actions/checkout@v4.1.0
 
       - name: Login to Docker Hub
-        uses: docker/login-action@v2.2.0
+        uses: docker/login-action@v3.0.0
         with:
           username: ${{ secrets.DOCKERHUB_USERNAME }}
           password: ${{ secrets.DOCKERHUB_TOKEN }}
