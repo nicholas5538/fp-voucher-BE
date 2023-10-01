@@ -18,6 +18,7 @@ const config: JestConfigWithTsJest = {
     "^(\\.{1,2}/.*)\\.js$": "$1",
   },
   roots: ["<rootDir>/src"],
+  setupFiles: ["dotenv/config"],
   testEnvironment: "node",
   transform: {
     "^.+\\.[tj]sx?$": [

@@ -1,4 +1,4 @@
-import { config } from "dotenv";
+import "dotenv/config";
 import { disconnect, Types, type Document } from "mongoose";
 import request from "supertest";
 import app from "../app.js";
@@ -6,8 +6,6 @@ import httpErrorsMessage from "../constants/error-messages.js";
 import type { Tvouchers } from "../constants/type-interface.js";
 import connectDb from "../db/connect.js";
 import Vouchers from "../models/vouchers.js";
-
-config();
 
 let validToken = "";
 const dummyBody: Readonly<{ [key: string]: string }> = {
