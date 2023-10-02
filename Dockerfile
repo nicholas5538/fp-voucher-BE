@@ -30,11 +30,14 @@ FROM base AS prod
 ENV NODE_ENV production
 EXPOSE 3500
 
-RUN chown -R node:node .
+RUN deluser --remove-home node \
+  && addgroup -S node -g 1001 \
+  && adduser -S -G node -u 1001 node \
+  && chown -R node:node .
 
-COPY --from=build /app/dist ./dist
+COPY --from=build --chown=node:node /app/dist ./dist
 COPY --from=build /app/node_modules ./node_modules
-COPY --from=build --chown=nodejs:nodejs /app/run-main.js run-main.js
+COPY --from=build --chown=node:node /app/run-main.js run-main.js
 
 USER node
 
