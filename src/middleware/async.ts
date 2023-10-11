@@ -6,13 +6,7 @@ const asyncWrapper = (fn: expressFn<Promise<any>>) => {
     req: Request,
     res: Response,
     next: NextFunction
-  ): Promise<void> => {
-    try {
-      await fn(req, res, next);
-    } catch (err) {
-      next(err);
-    }
-  };
+  ): Promise<void> => await fn(req, res, next).catch((err) => next(err));
 };
 
 export default asyncWrapper;
