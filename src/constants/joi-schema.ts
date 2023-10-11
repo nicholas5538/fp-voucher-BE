@@ -34,13 +34,14 @@ export const updateSchema = Joi.object({
   description: Joi.string()
     .min(4)
     .max(30)
-    .pattern(/^[a-zA-Z0-9\s'@]*$/)
+    .pattern(/^[a-zA-Z0-9@$%-]*$/)
     .trim()
     .messages({
       "string.empty": "Description should not be empty",
       "string.min": "Description must contain at least 4 characters",
       "string.max": "Description must contain less than 30 characters",
-      "string.pattern.base": "Only alphabets, numbers, $, - and  % are allowed",
+      "string.pattern.base":
+        "Only alphabets, numbers, $, -, @ and % are allowed",
     }),
   discount: Joi.number()
     .min(5)
