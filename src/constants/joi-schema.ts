@@ -34,7 +34,7 @@ export const updateSchema = Joi.object({
   description: Joi.string()
     .min(4)
     .max(30)
-    .pattern(/^[a-zA-Z0-9@$%-]*$/)
+    .pattern(/^[a-zA-Z0-9$@% '-]*$/)
     .trim()
     .messages({
       "string.empty": "Description should not be empty",
