@@ -72,9 +72,10 @@ cd fp-voucher-BE
 
 2 methods of obtaining environment variables
 
-1. Using [dotenv-vault](https://github.com/dotenv-org/dotenv-vault#pull "dotenv-vault GitHub repository") (Needs to be installed locally)
+1. Using [dotenv-vault](https://github.com/dotenv-org/dotenv-vault#pull "dotenv-vault GitHub repository"), please request `vault_id` from [@nicholas5538](https://github.com/nicholas5538)
 
 ```zsh
+npx dotenv-vault@latest new <vault_id>
 npx dotenv-vault@latest pull development .env
 ```
 
