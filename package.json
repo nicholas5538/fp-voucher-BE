@@ -45,7 +45,7 @@
     "webpack-node-externals": "3.0.0"
   },
   "devDependencies": {
-    "@types/node": "20.8.7",
+    "@types/node": "20.8.10",
     "@types/supertest": "2.0.15",
     "@types/webpack": "5.28.4",
     "@types/webpack-node-externals": "3.0.3",
