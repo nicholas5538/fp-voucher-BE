@@ -98,7 +98,7 @@ Once you have [set up the repo](#repository-setup), you're ready to start develo
 ```sh
 # With Docker compose, you're able
 # to see live changes after refreshing
-docker compose up --env-file .env -d --build
+docker compose up -d --build
 
 # Or build your own image
 docker build --compress -t <image name> --target dev .
