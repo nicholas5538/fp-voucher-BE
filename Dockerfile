@@ -31,8 +31,8 @@ ENV NODE_ENV production
 EXPOSE 3500
 
 RUN deluser --remove-home node \
-  && addgroup -S node -g 1001 \
-  && adduser -S -G node -u 1001 node \
+  && addgroup -S node --gid 1001 \
+  && adduser -S -g node -u 1001 node \
   && chown -R node:node .
 
 COPY --from=build --chown=node:node /app/dist ./dist
