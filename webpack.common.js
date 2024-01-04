@@ -7,7 +7,7 @@ const __dirname = dirname(__filename);
 
 const common = {
   target: ["node", "es2023"],
-  entry: "./src/index.ts",
+  entry: "./src/app.ts",
   experiments: { outputModule: true },
   externals: [nodeExternals({ importType: "module" })],
   externalsPresets: { node: true },
