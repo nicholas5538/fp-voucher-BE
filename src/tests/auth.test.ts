@@ -1,20 +1,13 @@
 import "dotenv/config";
-import { disconnect } from "mongoose";
 import jwt from "jsonwebtoken";
 import request from "supertest";
-import app from "../app.js";
+import app, { server } from "../app.js";
 import { dummyBody } from "./common.js";
 import httpErrorsMessage from "../constants/error-messages.js";
-import connectDb from "../db/connect.js";
 
-beforeAll(
-  async () =>
-    await connectDb({
-      uri: process.env.MONGO_URI!,
-      collection: process.env.MONGO_COLLECTION!,
-    })
-);
-afterAll(async () => await disconnect());
+afterAll(() => {
+  server.close();
+});
 
 describe("Test JWT verification middleware", () => {
   it("should deny access with an expired token", async () => {
@@ -72,8 +65,8 @@ describe("Test JWT verification middleware", () => {
   it("should allow access with a valid token", async () => {
     const { body: getToken } = await request(app).post("/user").send(dummyBody);
     expect(getToken).not.toBeNull();
-    const validToken = `Bearer ${getToken.token}`;
 
+    const validToken = `Bearer ${getToken.token}`;
     const { body, statusCode } = await request(app)
       .get("/api/v1/vouchers")
       .set("Authorization", validToken);

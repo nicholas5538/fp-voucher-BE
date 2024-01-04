@@ -1,7 +1,10 @@
 import "dotenv/config";
 import request from "supertest";
-import app from "../app.js";
+import app, { server } from "../app.js";
 import { dummyBody } from "./common.js";
+import { prisma } from "../middleware/async.js";
+
+afterAll(() => server.close());
 
 describe("POST /user endpoint", () => {
   it("should return 400 when email is not provided", async () => {
@@ -51,5 +54,8 @@ describe("POST /user endpoint", () => {
       .send(dummyBody);
     expect(statusCode).toBe(201);
     expect(body).not.toBeNull();
+
+    await prisma.user.delete({ where: { email: dummyBody.email } });
+    prisma.$disconnect();
   });
 });

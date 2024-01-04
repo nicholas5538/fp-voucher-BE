@@ -1,36 +1,39 @@
 import "dotenv/config";
-import { disconnect, Types, type Document } from "mongoose";
 import request from "supertest";
-import app from "../app.js";
+import app, { server } from "../app.js";
+import { dummyBody } from "./common.js";
 import httpErrorsMessage from "../constants/error-messages.js";
-import type { Tvouchers } from "../constants/type-interface.js";
-import connectDb from "../db/connect.js";
-import Vouchers from "../models/vouchers.js";
+import { prisma } from "../middleware/async.js";
 
 let validToken = "";
-const dummyBody: Readonly<{ [key: string]: string }> = {
-  email: "12345@gmail.com",
-  name: "Nick",
-};
-const dummyVoucher: Omit<Tvouchers, keyof Document> & Pick<Tvouchers, "_id"> = {
-  _id: "",
-  category: "Pick-up",
-  description: "API test only",
+const fakeId = "invalidId";
+const dummyVoucher = {
+  category: "Delivery",
+  description: "For API testing only",
   discount: 10,
-  minSpending: new Types.Decimal128("0"),
+  minSpending: 10,
   promoCode: "APITEST10",
-  startDate: new Date(),
-  expiryDate: new Date(new Date().getTime() + 7 * 24 * 60 * 60 * 1000),
+  startDate: "01-11-2024",
+  expiryDate: "03-20-2024",
 };
 
-beforeAll(
-  async () =>
-    await connectDb({
-      uri: process.env.MONGO_URI!,
-      collection: process.env.MONGO_COLLECTION!,
-    })
-);
-afterAll(async () => await disconnect());
+async function createVoucher(token: string) {
+  return await request(app)
+    .post("/api/v1/vouchers")
+    .send(dummyVoucher)
+    .set("Authorization", token);
+}
+
+afterAll(async () => {
+  await prisma.user.delete({
+    where: {
+      email: dummyBody.email,
+      name: dummyBody.name,
+    },
+  });
+  await prisma.$disconnect();
+  server.close();
+});
 
 describe("GET /api/v1/vouchers", () => {
   it("should return no voucher error when the offset or limit is out of bounds", async () => {
@@ -59,7 +62,7 @@ describe("GET /api/v1/vouchers", () => {
 describe("GET /api/v1/vouchers/:id", () => {
   it("should return an error when the id is invalid", async () => {
     const { body, notFound, statusCode } = await request(app)
-      .get("/api/v1/vouchers/dddddddddddddddddddddddd")
+      .get(`/api/v1/vouchers/${fakeId}`)
       .set("Authorization", validToken);
     expect(statusCode).toBe(httpErrorsMessage.NoVoucher.statusCode);
     expect(body.msg).toBe(httpErrorsMessage.NoVoucher.message);
@@ -67,16 +70,26 @@ describe("GET /api/v1/vouchers/:id", () => {
   });
 
   it("should return the voucher when the id is valid", async () => {
-    const _id = new Types.ObjectId();
-    await Vouchers.create({ ...dummyVoucher, _id });
+    await createVoucher(validToken);
 
+    const { id } = await prisma.voucher.findUniqueOrThrow({
+      where: {
+        promoCode: dummyVoucher.promoCode,
+      },
+      select: {
+        id: true,
+      },
+    });
     const { body, statusCode } = await request(app)
-      .get(`/api/v1/vouchers/${_id}`)
+      .get(`/api/v1/vouchers/${id}`)
       .set("Authorization", validToken);
-    await Vouchers.findByIdAndDelete(_id);
     expect(statusCode).toBe(200);
     expect(body.results).not.toBeUndefined();
     expect(body["X-Total-count"]).toEqual(1);
+
+    await prisma.voucher.delete({
+      where: { id, promoCode: dummyVoucher.promoCode },
+    });
   });
 });
 
@@ -91,20 +104,16 @@ describe("POST /api/v1/vouchers", () => {
   });
 
   it("should create a voucher when the request body is valid", async () => {
-    const newVoucher: typeof dummyVoucher = {
-      ...dummyVoucher,
-      _id: new Types.ObjectId(),
-      description: "aaaaa",
-      promoCode: "AAAAA",
-    };
     const { body, statusCode } = await request(app)
       .post("/api/v1/vouchers")
-      .send(newVoucher)
+      .send(dummyVoucher)
       .set("Authorization", validToken);
 
-    await Vouchers.deleteOne({
-      description: newVoucher.description,
-      promoCode: newVoucher.promoCode,
+    await prisma.voucher.delete({
+      where: {
+        description: dummyVoucher.description,
+        promoCode: dummyVoucher.promoCode,
+      },
     });
     expect(statusCode).toBe(201);
     expect(body.msg).toBe("Voucher has been created");
@@ -122,7 +131,6 @@ describe("PATCH /api/v1/vouchers", () => {
   });
 
   it("should return no voucher error when the id is invalid", async () => {
-    const fakeId = new Types.ObjectId();
     const { body, notFound, statusCode } = await request(app)
       .patch(`/api/v1/vouchers/${fakeId}`)
       .send({ discount: 20 })
@@ -133,7 +141,6 @@ describe("PATCH /api/v1/vouchers", () => {
   });
 
   it("should return validation error when the request body is empty", async () => {
-    const fakeId = new Types.ObjectId();
     const { badRequest, body, statusCode } = await request(app)
       .patch(`/api/v1/vouchers/${fakeId}`)
       .send({})
@@ -144,15 +151,18 @@ describe("PATCH /api/v1/vouchers", () => {
   });
 
   it("should return validation error when the request body is invalid", async () => {
-    const _id = new Types.ObjectId();
-    await Vouchers.create({ ...dummyVoucher, _id });
-    const { badRequest, body, statusCode } = await request(app)
-      .patch(`/api/v1/vouchers/${_id}`)
-      .send({ category: "not a category" })
-      .set("Authorization", validToken);
+    const { id } = await prisma.voucher.findFirstOrThrow({
+      where: {
+        category: "Delivery",
+      },
+      select: {
+        id: true,
+      },
+    });
 
-    await request(app)
-      .delete(`/api/v1/vouchers/${_id}`)
+    const { badRequest, body, statusCode } = await request(app)
+      .patch(`/api/v1/vouchers/${id}`)
+      .send({ category: "not a category" })
       .set("Authorization", validToken);
     expect(statusCode).toBe(400);
     expect(body.msg).not.toBeNull();
@@ -160,18 +170,20 @@ describe("PATCH /api/v1/vouchers", () => {
   });
 
   it("should update the document when both id and body are valid", async () => {
-    const _id = new Types.ObjectId();
-    await Vouchers.create({ ...dummyVoucher, _id });
-    const { noContent, statusCode } = await request(app)
-      .patch(`/api/v1/vouchers/${_id}`)
-      .send({ startDate: "2023-01-01", expiryDate: "2024-04-04" })
-      .set("Authorization", validToken);
+    await createVoucher(validToken);
 
-    await request(app)
-      .delete(`/api/v1/vouchers/${_id}`)
+    const { id } = await prisma.voucher.findUniqueOrThrow({
+      where: { promoCode: dummyVoucher.promoCode },
+      select: { id: true },
+    });
+    const { noContent, statusCode } = await request(app)
+      .patch(`/api/v1/vouchers/${id}`)
+      .send({ category: "Pandago" })
       .set("Authorization", validToken);
     expect(statusCode).toBe(204);
     expect(noContent).toBeTruthy();
+
+    await prisma.voucher.delete({ where: { id } });
   });
 });
 
@@ -185,18 +197,7 @@ describe("DELETE /api/v1/vouchers/:id", () => {
     expect(notFound).toBeTruthy();
   });
 
-  it("should return server error when the id is not a ObjectId", async () => {
-    const { body, serverError, statusCode } = await request(app)
-      .delete("/api/v1/vouchers/abcdef")
-      .set("Authorization", validToken);
-    expect(statusCode).toBe(500);
-    expect(body.msg).toBe("Something went wrong, please try again");
-    expect(serverError).toBeTruthy();
-  });
-
   it("should return no voucher when the id is invalid", async () => {
-    // :id must have a length of 25
-    const fakeId = new Types.ObjectId();
     const { body, notFound, statusCode } = await request(app)
       .delete(`/api/v1/vouchers/${fakeId}`)
       .set("Authorization", validToken);
@@ -206,10 +207,15 @@ describe("DELETE /api/v1/vouchers/:id", () => {
   });
 
   it("should delete voucher when the id is valid", async () => {
-    const _id = new Types.ObjectId();
-    await Vouchers.create({ ...dummyVoucher, _id });
+    await createVoucher(validToken);
+
+    const { id } = await prisma.voucher.findUniqueOrThrow({
+      where: { promoCode: dummyVoucher.promoCode },
+      select: { id: true },
+    });
+
     const { noContent, statusCode } = await request(app)
-      .delete(`/api/v1/vouchers/${_id}`)
+      .delete(`/api/v1/vouchers/${id}`)
       .set("Authorization", validToken);
     expect(statusCode).toBe(204);
     expect(noContent).toBeTruthy();
