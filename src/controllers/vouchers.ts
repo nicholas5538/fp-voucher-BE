@@ -12,55 +12,33 @@ type Tlinks = {
   self: string;
 };
 
+type Voucher = {
+  id: string;
+  userId?: string;
+  category: "Pickup" | "Delivery" | "Pandago" | "Pandamart" | "Dine";
+  description: string;
+  discount: number;
+  minSpending: number;
+  promoCode: string;
+  startDate: Date;
+  expiryDate: Date;
+};
+
 export const getVoucher = asyncWrapper(async (req, res, next) => {
   const { id } = req.params;
   const baseUrl = `${req.protocol}://${req.get("host")}`;
-  try {
-    const voucher = await prisma.voucher.findUniqueOrThrow({ where: { id } });
-    return res.status(200).json({
-      _links: {
-        base: baseUrl,
-        self: baseUrl + req.originalUrl,
-      },
-      results: voucher,
-      "X-Total-count": 1,
-    });
-  } catch (error) {
-    if (
-      error instanceof Prisma.PrismaClientKnownRequestError &&
-      error.code === "P2025"
-    ) {
-      return next(
-        createError(
-          httpErrorsMessage.NoVoucher.statusCode,
-          httpErrorsMessage.NoVoucher.message
-        )
-      );
-    }
-    return next();
-  }
-});
+  const voucher = await prisma.$queryRaw<Voucher[]>`SELECT _id AS id,
+                                                           category,
+                                                           description,
+                                                           discount,
+                                                           "minSpending",
+                                                           "promoCode",
+                                                           "startDate",
+                                                           "expiryDate"
+                                                    FROM "public"."Voucher"
+                                                    WHERE _id = ${id}`;
 
-export const getVouchers = asyncWrapper(async (req, res, next) => {
-  const { offset, limit } = req.query;
-  const skip = Number(offset) || 0,
-    take = Number(limit) || 10,
-    page = Math.floor(skip / take) + 1;
-  const vouchers = await prisma.voucher.findMany({
-    skip,
-    take,
-  });
-
-  const totalVouchersQuery = vouchers.length,
-    baseUrl = `${req.protocol}://${req.get("host")}`,
-    totalVouchersCount = await prisma.voucher.count(),
-    lastPage = Math.floor(totalVouchersCount / take) + 1,
-    links: Tlinks = {
-      base: baseUrl,
-      self: baseUrl + req.originalUrl,
-    };
-
-  if (totalVouchersQuery === 0) {
+  if (!voucher.length) {
     return next(
       createError(
         httpErrorsMessage.NoVoucher.statusCode,
@@ -68,6 +46,49 @@ export const getVouchers = asyncWrapper(async (req, res, next) => {
       )
     );
   }
+  return res.status(200).json({
+    _links: {
+      base: baseUrl,
+      self: baseUrl + req.originalUrl,
+    },
+    results: voucher,
+    "X-Total-count": 1,
+  });
+});
+
+export const getVouchers = asyncWrapper(async (req, res, next) => {
+  const { offset, limit } = req.query;
+  const skip = Number(offset) || 0,
+    take = Number(limit) || 10,
+    page = Math.floor(skip / take) + 1;
+  const vouchers = await prisma.$queryRaw<Voucher[]>`SELECT _id AS id,
+                                                            category,
+                                                            description,
+                                                            discount,
+                                                            "minSpending",
+                                                            "promoCode",
+                                                            "startDate",
+                                                            "expiryDate"
+                                                     FROM "public"."Voucher" LIMIT ${take}
+                                                     OFFSET ${skip}`;
+
+  const totalVouchersQuery = vouchers.length;
+  if (!totalVouchersQuery) {
+    return next(
+      createError(
+        httpErrorsMessage.NoVoucher.statusCode,
+        httpErrorsMessage.NoVoucher.message
+      )
+    );
+  }
+
+  const baseUrl = `${req.protocol}://${req.get("host")}`,
+    totalVouchersCount = await prisma.voucher.count(),
+    lastPage = Math.floor(totalVouchersCount / take) + 1,
+    links: Tlinks = {
+      base: baseUrl,
+      self: baseUrl + req.originalUrl,
+    };
 
   if (skip + totalVouchersQuery < totalVouchersCount) {
     links.next = `${baseUrl}${req.originalUrl.slice(0, 16)}?offset=${
@@ -101,7 +122,7 @@ export const createVoucher = asyncWrapper(async (req, res, next) => {
     dateFormat: "date",
   });
 
-  if (error) {
+  if (error !== undefined) {
     return next(createError(400, error.message));
   }
 
@@ -124,7 +145,6 @@ export const updateVoucher = asyncWrapper(async (req, res, next) => {
   if (validationResult.error) {
     return next(createError(400, validationResult.error.details[0].message));
   }
-
   try {
     await prisma.voucher.update({
       where: { id: req.params.id },
@@ -149,24 +169,17 @@ export const updateVoucher = asyncWrapper(async (req, res, next) => {
 });
 
 export const deleteVoucher = asyncWrapper(async (req, res, next) => {
-  try {
-    await prisma.voucher.delete({
-      where: { id: req.params.id },
-    });
-  } catch (error) {
-    if (
-      error instanceof Prisma.PrismaClientKnownRequestError &&
-      error.code === "P2025"
-    ) {
-      return next(
-        createError(
-          httpErrorsMessage.NoVoucher.statusCode,
-          httpErrorsMessage.NoVoucher.message
-        )
-      );
-    }
-    return next();
-  }
+  const deletedVoucher = await prisma.$executeRaw<number>`DELETE
+                                                          FROM "public"."Voucher"
+                                                          WHERE _id = ${req.params.id}`;
 
+  if (deletedVoucher === 0) {
+    return next(
+      createError(
+        httpErrorsMessage.NoVoucher.statusCode,
+        httpErrorsMessage.NoVoucher.message
+      )
+    );
+  }
   return res.status(204).json({ msg: "No content" });
 });

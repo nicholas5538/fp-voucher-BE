@@ -1,8 +1,7 @@
 import createError from "http-errors";
 import jwt from "jsonwebtoken";
 import { tokenSchema } from "../constants/joi-schema.js";
-import asyncWrapper from "../middleware/async.js";
-import { prisma } from "../middleware/async.js";
+import asyncWrapper, { prisma } from "../middleware/async.js";
 
 const login = asyncWrapper(async (req, res, next) => {
   const { email, name } = req.body;
@@ -13,8 +12,13 @@ const login = asyncWrapper(async (req, res, next) => {
     return next(createError(400, validationResult.error.details[0].message));
   }
 
-  if (!(await prisma.user.findUnique({ where: { email: email } }))) {
-    await prisma.user.create({ data: { isAdmin: true, ...payload } });
+  const userFound = await prisma.$executeRaw<number>`SELECT *
+                                                     FROM "public"."User"
+                                                     WHERE email = ${email}
+                                                       AND name = ${name}`;
+
+  if (!userFound) {
+    await prisma.user.create({ data: { ...payload, isAdmin: true } });
   }
 
   const token = jwt.sign(payload, process.env.JWT_SECRET as string, {
@@ -22,7 +26,10 @@ const login = asyncWrapper(async (req, res, next) => {
     expiresIn: process.env.JWT_EXPIRES_IN,
   });
 
-  return res.status(201).json({ token });
+  return res
+    .status(201)
+    .header("Authorization", token)
+    .json({ msg: "Token has been issued" });
 });
 
 export default login;
