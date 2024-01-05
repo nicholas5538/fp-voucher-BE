@@ -38,7 +38,7 @@ jobs:
           echo "PORT=${PORT}" >> .env
 
       - name: Install dependencies
-        run: pnpm i --frozen-lockfile
+        run: pnpm i
 
       - name: Run coverage test
         run: pnpm run test:cov
