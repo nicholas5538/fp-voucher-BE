@@ -18,9 +18,9 @@
     "pull-env": "npx dotenv-vault@latest pull",
     "push-env": "npx dotenv-vault@latest push",
     "start": "pnpm run build:prod && node run-main.js",
-    "test": "jest -i",
-    "test:cov": "jest --coverage -i",
-    "test:watch": "jest --watch -i"
+    "test": "jest --maxWorkers 1",
+    "test:cov": "jest --coverage --maxWorkers 1",
+    "test:watch": "jest --watch --maxWorkers 1"
   },
   "dependencies": {
     "@prisma/client": "5.7.1",
