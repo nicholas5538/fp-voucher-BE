@@ -8,6 +8,7 @@ const config: JestConfigWithTsJest = {
     "/node_modules/",
     "/src/db/",
     "/src/constants",
+    "/src/index.ts",
     "/src/routes",
   ],
   coverageProvider: "v8",
@@ -19,6 +20,7 @@ const config: JestConfigWithTsJest = {
   },
   roots: ["<rootDir>/src"],
   setupFiles: ["dotenv/config"],
+  setupFilesAfterEnv: ["<rootDir>/setup-jest.ts"],
   testEnvironment: "node",
   transform: {
     "^.+\\.[tj]sx?$": [
@@ -29,12 +31,7 @@ const config: JestConfigWithTsJest = {
     ],
   },
   verbose: true,
-  watchPathIgnorePatterns: [
-    "/node_modules/",
-    "/src/db/",
-    "/src/constants",
-    "/src/routes",
-  ],
+  watchPathIgnorePatterns: ["/node_modules/", "/src/db/", "/src/constants"],
 };
 
 export default config;

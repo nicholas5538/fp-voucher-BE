@@ -1,12 +1,9 @@
-import dayjs from "dayjs";
-import utc from "dayjs/plugin/utc.js";
-import timezone from "dayjs/plugin/timezone.js";
+import { Prisma } from "@prisma/client";
 import createError from "http-errors";
-import { Types } from "mongoose";
-import { updateSchema } from "../constants/joi-schema.js";
+import { voucherSchema } from "../constants/joi-schema.js";
 import httpErrorsMessage from "../constants/error-messages.js";
-import asyncWrapper from "../middleware/async.js";
-import Vouchers from "../models/vouchers.js";
+import { Voucher } from "../constants/type-interface.js";
+import asyncWrapper, { prisma } from "../middleware/async.js";
 
 type Tlinks = {
   base: string;
@@ -16,14 +13,21 @@ type Tlinks = {
   self: string;
 };
 
-dayjs.extend(utc);
-dayjs.extend(timezone);
-dayjs.tz.setDefault("Asia/Singapore");
-
 export const getVoucher = asyncWrapper(async (req, res, next) => {
-  const { id: _id } = req.params;
-  const voucher = await Vouchers.findById({ _id }).exec();
-  if (!voucher) {
+  const { id } = req.params;
+  const baseUrl = `${req.protocol}://${req.get("host")}`;
+  const voucher = await prisma.$queryRaw<Voucher[]>`SELECT _id AS id,
+                                                           category,
+                                                           description,
+                                                           discount,
+                                                           "minSpending",
+                                                           "promoCode",
+                                                           "startDate",
+                                                           "expiryDate"
+                                                    FROM "public"."Voucher"
+                                                    WHERE _id = ${id}`;
+
+  if (!voucher.length) {
     return next(
       createError(
         httpErrorsMessage.NoVoucher.statusCode,
@@ -31,8 +35,6 @@ export const getVoucher = asyncWrapper(async (req, res, next) => {
       )
     );
   }
-
-  const baseUrl = `${req.protocol}://${req.get("host")}`;
   return res.status(200).json({
     _links: {
       base: baseUrl,
@@ -46,71 +48,78 @@ export const getVoucher = asyncWrapper(async (req, res, next) => {
 export const getVouchers = asyncWrapper(async (req, res, next) => {
   const { offset, limit } = req.query;
   const skip = Number(offset) || 0,
-    limitNo = Number(limit) || 10,
-    page = Math.floor(skip / limitNo) + 1;
+    take = Number(limit) || 10,
+    page = Math.floor(skip / take) + 1;
+  const vouchers = await prisma.$queryRaw<Voucher[]>`SELECT _id AS id,
+                                                            category,
+                                                            description,
+                                                            discount,
+                                                            "minSpending",
+                                                            "promoCode",
+                                                            "startDate",
+                                                            "expiryDate"
+                                                     FROM "public"."Voucher" LIMIT ${take}
+                                                     OFFSET ${skip}`;
 
-  const vouchers = await Vouchers.find().skip(skip).limit(limitNo);
-  const totalVoucherQuery = vouchers.length;
-  if (!totalVoucherQuery)
+  const totalVouchersQuery = vouchers.length;
+  if (!totalVouchersQuery) {
     return next(
       createError(
         httpErrorsMessage.NoVoucher.statusCode,
         httpErrorsMessage.NoVoucher.message
       )
     );
+  }
 
-  const baseUrl = `${req.protocol}://${req.get("host")}`;
-  const totalVouchers = await Vouchers.countDocuments().exec();
-  const lastPage = Math.floor(totalVouchers / limitNo) + 1;
+  const baseUrl = `${req.protocol}://${req.get("host")}`,
+    totalVouchersCount = await prisma.voucher.count(),
+    lastPage = Math.floor(totalVouchersCount / take) + 1,
+    links: Tlinks = {
+      base: baseUrl,
+      self: baseUrl + req.originalUrl,
+    };
 
-  const links: Tlinks = {
-    base: baseUrl,
-    self: baseUrl + req.originalUrl,
-  };
-
-  if (skip + totalVoucherQuery < totalVouchers) {
+  if (skip + totalVouchersQuery < totalVouchersCount) {
     links.next = `${baseUrl}${req.originalUrl.slice(0, 16)}?offset=${
-      skip + limitNo
-    }&limit=${limitNo}`;
+      skip + take
+    }&limit=${take}`;
   }
 
   if (skip > 0) {
-    const newOffset = Math.max(0, skip - limitNo);
     links.previous = `${baseUrl}${req.originalUrl.slice(
       0,
       16
-    )}?offset=${newOffset}&limit=${limitNo}`;
+    )}?offset=${Math.max(0, skip - take)}&limit=${take}`;
   }
 
   return res.status(200).json({
     _links: links,
-    end: skip + totalVoucherQuery,
+    end: skip + totalVouchersQuery,
     lastPage,
-    limit: limitNo,
+    limit: take,
     page,
     results: vouchers,
     start: skip,
-    totalVouchers,
-    "X-Total-count": totalVoucherQuery,
+    totalVouchers: totalVouchersCount,
+    "X-Total-count": totalVouchersQuery,
   });
 });
 
 export const createVoucher = asyncWrapper(async (req, res, next) => {
-  const voucher = new Vouchers(req.body);
+  const reqBody = req.body;
+  const { value: data, error } = voucherSchema.validate(reqBody, {
+    dateFormat: "date",
+  });
 
-  // Modify req.body
-  voucher._id = new Types.ObjectId();
-
-  const validationError = voucher.validateSync();
-  if (validationError) {
-    return next(createError(400, validationError.message));
+  if (error !== undefined) {
+    return next(createError(400, error.message));
   }
-  await voucher.save();
+
+  await prisma.voucher.create({ data });
   return res.status(201).json({ msg: "Voucher has been created" });
 });
 
 export const updateVoucher = asyncWrapper(async (req, res, next) => {
-  const { id: _id } = req.params;
   const body = req.body;
   if (body.constructor === Object && Object.keys(body).length === 0) {
     return next(
@@ -121,37 +130,45 @@ export const updateVoucher = asyncWrapper(async (req, res, next) => {
     );
   }
 
-  const validationResult = updateSchema.validate(body, { convert: true });
+  const validationResult = voucherSchema.validate(body, { convert: true });
   if (validationResult.error) {
-    console.log(validationResult.error);
     return next(createError(400, validationResult.error.details[0].message));
   }
-
-  const voucher = await Vouchers.findByIdAndUpdate(_id, body, {
-    returnDocument: "before",
-    upsert: false,
-  });
-
-  return !voucher
-    ? next(
+  try {
+    await prisma.voucher.update({
+      where: { id: req.params.id },
+      data: body,
+    });
+  } catch (error) {
+    if (
+      error instanceof Prisma.PrismaClientKnownRequestError &&
+      error.code === "P2025"
+    ) {
+      return next(
         createError(
           httpErrorsMessage.NoVoucher.statusCode,
           httpErrorsMessage.NoVoucher.message
         )
-      )
-    : res.status(204).json({ msg: "No content" });
+      );
+    }
+    return next();
+  }
+
+  return res.status(204).json({ msg: "No content" });
 });
 
 export const deleteVoucher = asyncWrapper(async (req, res, next) => {
-  const { id: _id } = req.params;
-  const voucher = await Vouchers.findOneAndDelete({ _id }).exec();
+  const deletedVoucher = await prisma.$executeRaw<number>`DELETE
+                                                          FROM "public"."Voucher"
+                                                          WHERE _id = ${req.params.id}`;
 
-  return !voucher
-    ? next(
-        createError(
-          httpErrorsMessage.NoVoucher.statusCode,
-          httpErrorsMessage.NoVoucher.message
-        )
+  if (deletedVoucher === 0) {
+    return next(
+      createError(
+        httpErrorsMessage.NoVoucher.statusCode,
+        httpErrorsMessage.NoVoucher.message
       )
-    : res.status(204).json({ msg: "No content" });
+    );
+  }
+  return res.status(204).json({ msg: "No content" });
 });

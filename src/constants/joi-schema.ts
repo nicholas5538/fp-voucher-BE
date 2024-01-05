@@ -23,9 +23,12 @@ const currentDate = new Date();
 const fiveYearsFromNow = new Date();
 fiveYearsFromNow.setFullYear(currentDate.getFullYear() + 5);
 
-export const updateSchema = Joi.object({
+export const voucherSchema = Joi.object({
+  userId: Joi.string().trim().messages({
+    "string.empty": "User ID is not provided",
+  }),
   category: Joi.string()
-    .valid("Pick-up", "Delivery", "Dine-in", "Pandamart", "Pandago")
+    .valid("Pickup", "Delivery", "Dine", "Pandamart", "Pandago")
     .trim()
     .messages({
       "string.empty": "Category should not be empty",

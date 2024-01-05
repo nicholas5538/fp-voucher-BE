@@ -46,10 +46,10 @@ describe("POST /user endpoint", () => {
   });
 
   it("should return 201 and generate new token", async () => {
-    const { body, statusCode } = await request(app)
+    const { header, statusCode } = await request(app)
       .post("/user")
       .send(dummyBody);
+    expect(header.authorization).not.toBeNull();
     expect(statusCode).toBe(201);
-    expect(body).not.toBeNull();
   });
 });

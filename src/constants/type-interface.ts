@@ -1,6 +1,5 @@
 import type { Request, Response, NextFunction } from "express";
 import type { HttpError } from "http-errors";
-import type { Document, Types } from "mongoose";
 
 export type expressFn<T> = (
   req: Request,
@@ -9,12 +8,14 @@ export type expressFn<T> = (
   err?: Error | HttpError
 ) => T;
 
-export interface Tvouchers extends Document {
-  category: "Pick-up" | "Delivery" | "Dine-in" | "Pandamart" | "Pandago";
+export type Voucher = {
+  id: string;
+  userId?: string;
+  category: "Pickup" | "Delivery" | "Pandago" | "Pandamart" | "Dine";
   description: string;
   discount: number;
-  minSpending: Types.Decimal128;
+  minSpending: number;
   promoCode: string;
   startDate: Date;
   expiryDate: Date;
-}
+};
