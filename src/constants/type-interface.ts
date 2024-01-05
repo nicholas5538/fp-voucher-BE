@@ -7,3 +7,15 @@ export type expressFn<T> = (
   next: NextFunction,
   err?: Error | HttpError
 ) => T;
+
+export type Voucher = {
+  id: string;
+  userId?: string;
+  category: "Pickup" | "Delivery" | "Pandago" | "Pandamart" | "Dine";
+  description: string;
+  discount: number;
+  minSpending: number;
+  promoCode: string;
+  startDate: Date;
+  expiryDate: Date;
+};

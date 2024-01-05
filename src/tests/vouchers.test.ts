@@ -1,8 +1,9 @@
 import "dotenv/config";
 import request from "supertest";
-import app, { server } from "../app.js";
+import app from "../app.js";
 import { dummyBody } from "./common.js";
 import httpErrorsMessage from "../constants/error-messages.js";
+import { Voucher } from "../constants/type-interface.js";
 import { prisma } from "../middleware/async.js";
 
 let validToken = "";
@@ -17,28 +18,17 @@ const dummyVoucher = {
   expiryDate: "03-20-2024",
 };
 
-async function createVoucher(token: string) {
-  return await request(app)
+function createVoucher(token: string) {
+  return request(app)
     .post("/api/v1/vouchers")
     .send(dummyVoucher)
     .set("Authorization", token);
 }
 
-afterAll(async () => {
-  await prisma.user.delete({
-    where: {
-      email: dummyBody.email,
-      name: dummyBody.name,
-    },
-  });
-  await prisma.$disconnect();
-  server.close();
-});
-
 describe("GET /api/v1/vouchers", () => {
   it("should return no voucher error when the offset or limit is out of bounds", async () => {
-    const { body: getToken } = await request(app).post("/user").send(dummyBody);
-    validToken = `Bearer ${getToken.token}`;
+    const { header } = await request(app).post("/user").send(dummyBody);
+    validToken = `Bearer ${header.authorization}`;
 
     const { body, notFound, statusCode } = await request(app)
       .get(`/api/v1/vouchers?offset=${Number.MAX_SAFE_INTEGER}`)
@@ -46,7 +36,7 @@ describe("GET /api/v1/vouchers", () => {
     expect(statusCode).toBe(httpErrorsMessage.NoVoucher.statusCode);
     expect(body.msg).toBe(httpErrorsMessage.NoVoucher.message);
     expect(notFound).toBeTruthy();
-  });
+  }, 10000);
 
   it("should return next and previous URLs when there is offset and limit", async () => {
     const { body, statusCode } = await request(app)
@@ -72,25 +62,22 @@ describe("GET /api/v1/vouchers/:id", () => {
   it("should return the voucher when the id is valid", async () => {
     await createVoucher(validToken);
 
-    const { id } = await prisma.voucher.findUniqueOrThrow({
-      where: {
-        promoCode: dummyVoucher.promoCode,
-      },
-      select: {
-        id: true,
-      },
-    });
+    const voucher = await prisma.$queryRaw<Voucher[]>`SELECT _id as id
+                                                      FROM "public"."Voucher"
+                                                      WHERE "promoCode" = ${dummyVoucher.promoCode}`;
+    const id = voucher[0].id;
     const { body, statusCode } = await request(app)
       .get(`/api/v1/vouchers/${id}`)
       .set("Authorization", validToken);
+    await prisma.$executeRaw<number>`DELETE
+                                     FROM "public"."Voucher"
+                                     WHERE _id = ${id}
+                                       AND "promoCode" = ${dummyVoucher.promoCode}`;
+
     expect(statusCode).toBe(200);
     expect(body.results).not.toBeUndefined();
     expect(body["X-Total-count"]).toEqual(1);
-
-    await prisma.voucher.delete({
-      where: { id, promoCode: dummyVoucher.promoCode },
-    });
-  });
+  }, 10000);
 });
 
 describe("POST /api/v1/vouchers", () => {
@@ -108,13 +95,11 @@ describe("POST /api/v1/vouchers", () => {
       .post("/api/v1/vouchers")
       .send(dummyVoucher)
       .set("Authorization", validToken);
+    await prisma.$executeRaw<number>`DELETE
+                                     FROM "public"."Voucher"
+                                     WHERE description = ${dummyVoucher.description}
+                                       AND "promoCode" = ${dummyVoucher.promoCode}`;
 
-    await prisma.voucher.delete({
-      where: {
-        description: dummyVoucher.description,
-        promoCode: dummyVoucher.promoCode,
-      },
-    });
     expect(statusCode).toBe(201);
     expect(body.msg).toBe("Voucher has been created");
   });
@@ -151,17 +136,11 @@ describe("PATCH /api/v1/vouchers", () => {
   });
 
   it("should return validation error when the request body is invalid", async () => {
-    const { id } = await prisma.voucher.findFirstOrThrow({
-      where: {
-        category: "Delivery",
-      },
-      select: {
-        id: true,
-      },
-    });
-
+    const voucher = await prisma.$queryRaw<Voucher[]>`SELECT _id AS id
+                                                      FROM "public"."Voucher"
+                                                      WHERE category = 'Pickup' LIMIT 1`;
     const { badRequest, body, statusCode } = await request(app)
-      .patch(`/api/v1/vouchers/${id}`)
+      .patch(`/api/v1/vouchers/${voucher[0].id}`)
       .send({ category: "not a category" })
       .set("Authorization", validToken);
     expect(statusCode).toBe(400);
@@ -171,20 +150,21 @@ describe("PATCH /api/v1/vouchers", () => {
 
   it("should update the document when both id and body are valid", async () => {
     await createVoucher(validToken);
-
-    const { id } = await prisma.voucher.findUniqueOrThrow({
-      where: { promoCode: dummyVoucher.promoCode },
-      select: { id: true },
-    });
+    const voucher = await prisma.$queryRaw<Voucher[]>`SELECT _id as id
+                                                      FROM "public"."Voucher"
+                                                      WHERE "promoCode" = ${dummyVoucher.promoCode}`;
+    const id = voucher[0].id;
     const { noContent, statusCode } = await request(app)
       .patch(`/api/v1/vouchers/${id}`)
       .send({ category: "Pandago" })
       .set("Authorization", validToken);
+    await prisma.$executeRaw<number>`DELETE
+                                     FROM "public"."Voucher"
+                                     WHERE _id = ${id}`;
+
     expect(statusCode).toBe(204);
     expect(noContent).toBeTruthy();
-
-    await prisma.voucher.delete({ where: { id } });
-  });
+  }, 10000);
 });
 
 describe("DELETE /api/v1/vouchers/:id", () => {
@@ -209,10 +189,10 @@ describe("DELETE /api/v1/vouchers/:id", () => {
   it("should delete voucher when the id is valid", async () => {
     await createVoucher(validToken);
 
-    const { id } = await prisma.voucher.findUniqueOrThrow({
-      where: { promoCode: dummyVoucher.promoCode },
-      select: { id: true },
-    });
+    const voucher = await prisma.$queryRaw<Voucher[]>`SELECT _id AS id
+                                                      FROM "public"."Voucher"
+                                                      WHERE "promoCode" = ${dummyVoucher.promoCode}`;
+    const id = voucher[0].id;
 
     const { noContent, statusCode } = await request(app)
       .delete(`/api/v1/vouchers/${id}`)

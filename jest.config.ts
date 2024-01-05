@@ -20,6 +20,7 @@ const config: JestConfigWithTsJest = {
   },
   roots: ["<rootDir>/src"],
   setupFiles: ["dotenv/config"],
+  setupFilesAfterEnv: ["<rootDir>/setup-jest.ts"],
   testEnvironment: "node",
   transform: {
     "^.+\\.[tj]sx?$": [

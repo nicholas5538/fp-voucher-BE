@@ -2,6 +2,7 @@ import { Prisma } from "@prisma/client";
 import createError from "http-errors";
 import { voucherSchema } from "../constants/joi-schema.js";
 import httpErrorsMessage from "../constants/error-messages.js";
+import { Voucher } from "../constants/type-interface.js";
 import asyncWrapper, { prisma } from "../middleware/async.js";
 
 type Tlinks = {
@@ -10,18 +11,6 @@ type Tlinks = {
   next?: string;
   previous?: string;
   self: string;
-};
-
-type Voucher = {
-  id: string;
-  userId?: string;
-  category: "Pickup" | "Delivery" | "Pandago" | "Pandamart" | "Dine";
-  description: string;
-  discount: number;
-  minSpending: number;
-  promoCode: string;
-  startDate: Date;
-  expiryDate: Date;
 };
 
 export const getVoucher = asyncWrapper(async (req, res, next) => {

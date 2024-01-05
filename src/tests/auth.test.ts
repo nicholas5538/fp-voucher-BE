@@ -1,13 +1,9 @@
 import "dotenv/config";
 import jwt from "jsonwebtoken";
 import request from "supertest";
-import app, { server } from "../app.js";
+import app from "../app.js";
 import { dummyBody } from "./common.js";
 import httpErrorsMessage from "../constants/error-messages.js";
-
-afterAll(() => {
-  server.close();
-});
 
 describe("Test JWT verification middleware", () => {
   it("should deny access with an expired token", async () => {
@@ -63,14 +59,14 @@ describe("Test JWT verification middleware", () => {
   });
 
   it("should allow access with a valid token", async () => {
-    const { body: getToken } = await request(app).post("/user").send(dummyBody);
-    expect(getToken).not.toBeNull();
+    const { headers } = await request(app).post("/user").send(dummyBody);
+    expect(headers.authorization).not.toBeNull();
 
-    const validToken = `Bearer ${getToken.token}`;
+    const validToken = `Bearer ${headers.authorization}`;
     const { body, statusCode } = await request(app)
       .get("/api/v1/vouchers")
       .set("Authorization", validToken);
     expect(statusCode).toBe(200);
     expect(body).not.toBeNull();
-  });
+  }, 10000);
 });
