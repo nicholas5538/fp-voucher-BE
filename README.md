@@ -7,14 +7,14 @@
 - [Quick Links](#quick-links)
 - [Context](#context)
 - [Getting Started](#getting-started)
-  - [Environment Setup](#environment-setup)
-  - [Repository Setup](#repository-setup)
+    - [Environment Setup](#environment-setup)
+    - [Repository Setup](#repository-setup)
 - [Developing](#developing)
 - [API Documentation](#api-documentation)
-  - [GET request](#get-request)
-  - [POST request](#post-request)
-  - [PATCH request](#patch-request)
-  - [DELETE request](#delete-request)
+    - [GET request](#get-request)
+    - [POST request](#post-request)
+    - [PATCH request](#patch-request)
+    - [DELETE request](#delete-request)
 - [Additional Documentations](#additional-documentations)
 
 ## Quick links
@@ -24,9 +24,11 @@
 
 ## Context
 
-The purpose of this project is to practice some backend concepts as well as to learn the best practices for a REST API architecture.
+The purpose of this project is to practice some backend concepts as well as to learn the best practices for a REST API
+architecture.
 
-This is a Node.js app that contains multiple API endpoints to retrieve or manipulate data on a [MongoDB](https://www.mongodb.com/ "MongoDB official site") database.
+This is a Node.js app that contains multiple API endpoints to retrieve or manipulate data on
+a [MongoDB](https://www.mongodb.com/ "MongoDB official site") database.
 
 The following HTTP request methods have been implemented:
 
@@ -41,6 +43,7 @@ The following HTTP request methods have been implemented:
 <img align="left" alt="Docker" width="40px" src="https://cdn.jsdelivr.net/npm/devicon-2.2@2.2.0/icons/docker/docker-original.svg" style="padding-right:10px;" />
 <img align="left" alt="Node.js" width="40px" src="https://cdn.jsdelivr.net/npm/devicon-2.2@2.2.0/icons/nodejs/nodejs-original.svg" style="padding-right:10px;" />
 <img align="left" alt="Express.js" width="40px" src="https://cdn.jsdelivr.net/npm/devicon-2.2@2.2.0/icons/express/express-original.svg" style="padding-right:10px;" />
+<img align="left" alt="PostgreSQL" width="40px" src="https://cdn.jsdelivr.net/npm/devicon-2.2@2.2.0/icons/postgresql/postgresql-original.svg" style="padding-right:10px;" />
 <img alt="Webpack" width="30px" src="https://cdn.jsdelivr.net/npm/devicon-2.2@2.2.0/icons/webpack/webpack-original.svg" />
 
 ## Getting Started
@@ -53,11 +56,12 @@ The following HTTP request methods have been implemented:
 
 2. With package manager **[pnpm](https://pnpm.io/installation)**
 
-   - Install any version of node that is >= 14.0.0.
+    - Install any version of node that is >= 14.0.0.
 
-   > 💁 **Tip:** You can use [nvm](https://github.com/nvm-sh/nvm "nvm repo") to easily manage multiple versions of node. Once installed, run `nvm use` in the project directory.
+   > 💁 **Tip:** You can use [nvm](https://github.com/nvm-sh/nvm "nvm repo") to easily manage multiple versions of node.
+   Once installed, run `nvm use` in the project directory.
 
-   - Install [pnpm](https://pnpm.io/installation)
+    - Install [pnpm](https://pnpm.io/installation)
 
    > 💁 `npm install -g pnpm`
 
@@ -72,14 +76,16 @@ cd fp-voucher-BE
 
 2 methods of obtaining environment variables
 
-1. Using [dotenv-vault](https://github.com/dotenv-org/dotenv-vault#pull "dotenv-vault GitHub repository"), please request `vault_id` from [@nicholas5538](https://github.com/nicholas5538)
+1. Using [dotenv-vault](https://github.com/dotenv-org/dotenv-vault#pull "dotenv-vault GitHub repository"), please
+   request `vault_id` from [@nicholas5538](https://github.com/nicholas5538)
 
 ```zsh
 npx dotenv-vault@latest new <vault_id>
 npx dotenv-vault@latest pull development .env
 ```
 
-2. Create a `.env` file to store environment variables, please request secret keys from [@nicholas5538](https://github.com/nicholas5538 "nicholas5538 GitHub profile").
+2. Create a `.env` file to store environment variables, please request secret keys
+   from [@nicholas5538](https://github.com/nicholas5538 "nicholas5538 GitHub profile").
 
 ```zsh
 JWT_SECRET=<Insert a 64-bit JWT secret key here>
@@ -91,7 +97,8 @@ PORT=<Insert port number here>
 
 ## Developing
 
-Once you have [set up the repo](#repository-setup), you're ready to start developing. Starting the development environment is managed by the following command(s).
+Once you have [set up the repo](#repository-setup), you're ready to start developing. Starting the development
+environment is managed by the following command(s).
 
 - With **Docker (recommended)**
 
@@ -127,7 +134,7 @@ Obtain all vouchers with pagination options
 - Queries (Optional)
 
   | Query  | Type   | Description                            |
-  | ------ | ------ | -------------------------------------- |
+                | ------ | ------ | -------------------------------------- |
   | offset | Number | Define the starting index of your data |
   | limit  | Number | Define the amount of data per request  |
 
@@ -183,7 +190,7 @@ Obtain a single voucher based on the voucher id defined on the URL
 - Parameter
 
   | Parameter | Description                               |
-  | --------- | ----------------------------------------- |
+                | --------- | ----------------------------------------- |
   | voucherId | Retrieves the specified id of the voucher |
 
 - Making a request
@@ -224,14 +231,14 @@ Obtain a single voucher based on the voucher id defined on the URL
 ### POST request
 
 <details>
-    <summary>1. https://fp-capstone-backend.onrender/users</summary>
+    <summary>1. https://fp-capstone-backend.onrender/user</summary>
 
 You will obtain a JWT that allows you to access all the other API endpoints
 
 - Request body (required)
 
   | Key   | Description                           |
-  | ----- | ------------------------------------- |
+                | ----- | ------------------------------------- |
   | email | Email must have a valid @gmail domain |
   | name  | Name defined in your gmail account    |
 
@@ -249,7 +256,7 @@ You will obtain a JWT that allows you to access all the other API endpoints
 
   ```json
   {
-    "token": "ey=248u3987534-s"
+    msg: "Token has been issued", "userId": "233i32ih2uihgiu"
   }
   ```
 
@@ -262,15 +269,16 @@ Creates a voucher and store it in the database
 
 - Request body (required)
 
-| Key         | Value                                                    | Type                |
-| ----------- | -------------------------------------------------------- | ------------------- |
-| category    | "Pick-up", "Delivery", "Dine-in", "Pandamart", "Pandago" | String              |
-| description | "10% off on Subway                                       | String              |
-| discount    | 10                                                       | Number              |
-| minSpending | 0                                                        | Number              |
-| promoCode   | SUBWAY10                                                 | String              |
-| expiryDate  | 2023-10-20                                               | String (YYYY-MM-DD) |
-| startDate   | 2023-08-10                                               | String (YYYY-MM-DD) |
+| Key                  | Value                                                | Type                |
+|----------------------|------------------------------------------------------|---------------------|
+| userId (Foreign Key) | 233i32ih2uihgiu                                      | String              |
+| category             | "Pickup", "Delivery", "Dine", "Pandamart", "Pandago" | String              |
+| description          | "10% off on Subway                                   | String              |
+| discount             | 10                                                   | Number              |
+| minSpending          | 0                                                    | Number              |
+| promoCode            | SUBWAY10                                             | String              |
+| expiryDate           | 2023-10-20                                           | String (YYYY-MM-DD) |
+| startDate            | 2023-08-10                                           | String (YYYY-MM-DD) |
 
 - Making a request
 
@@ -279,7 +287,7 @@ Creates a voucher and store it in the database
     -H 'Content-Type: application/json' \
     -H 'Accept: application/json' \
     -H 'Authorization: Bearer 123456 \
-    -d '{"category: "Delivery", "description: "10% off on Subway", "discount": 10, "minSpending": 0, "promoCode": "SUBWAY10", expiryDate: "2023-10-20", startDate: "2023-08-10"}'
+    -d '{"userId: "233i32ih2uihgiu", category: "Delivery", "description: "10% off on Subway", "discount": 10, "minSpending": 0, "promoCode": "SUBWAY10", expiryDate: "2023-10-20", startDate: "2023-08-10"}'
     -X POST \
     https://fp-capstone-backend.onrender/api/v1/vouchers
   ```
@@ -300,7 +308,7 @@ Updates the voucher without modifying the entire data if it's not necessary
 - Parameter
 
   | Parameter | Description                              |
-  | --------- | ---------------------------------------- |
+                | --------- | ---------------------------------------- |
   | voucherId | Updates the voucher that has the same ID |
 
 - Request body (required)
@@ -308,7 +316,7 @@ Updates the voucher without modifying the entire data if it's not necessary
   All keys except for `expiryDate` and `startDate` are optional
 
   | Key         | Type                                  |
-  | ----------- | ------------------------------------- |
+                | ----------- | ------------------------------------- |
   | category    | String                                |
   | description | String                                |
   | discount    | Number                                |
@@ -347,7 +355,7 @@ Deletes the voucher from the database
 - Parameter
 
   | Parameter | Description                           |
-  | --------- | ------------------------------------- |
+                | --------- | ------------------------------------- |
   | voucherId | Delete a voucher that has the same ID |
 
 - Making a request
@@ -373,5 +381,6 @@ Deletes the voucher from the database
 
 - [Docker documentation](https://docs.docker.com/ "Docker documentation")
 - [Express.js](https://expressjs.com/ "Express.js documentation")
-- [Mongoose](https://mongoosejs.com/docs/guide.html "Mongoose documentation")
+- [PostgreSQL](https://www.postgresql.org/docs/ "PostgreSQL documentation")
+- [Prisma ORM](https://www.prisma.io/docs "Prisma ORM documentation")
 - [Webpack](https://webpack.js.org/concepts/ "Webpack documentation")
