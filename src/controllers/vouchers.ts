@@ -38,10 +38,10 @@ export const getVoucher = asyncWrapper(async (req, res, next) => {
   return res.status(200).json({
     _links: {
       base: baseUrl,
-      self: baseUrl + req.originalUrl,
+      self: baseUrl + req.originalUrl
     },
     results: voucher,
-    "X-Total-count": 1,
+    "X-Total-count": 1
   });
 });
 
@@ -76,7 +76,7 @@ export const getVouchers = asyncWrapper(async (req, res, next) => {
     lastPage = Math.floor(totalVouchersCount / take) + 1,
     links: Tlinks = {
       base: baseUrl,
-      self: baseUrl + req.originalUrl,
+      self: baseUrl + req.originalUrl
     };
 
   if (skip + totalVouchersQuery < totalVouchersCount) {
@@ -101,21 +101,19 @@ export const getVouchers = asyncWrapper(async (req, res, next) => {
     results: vouchers,
     start: skip,
     totalVouchers: totalVouchersCount,
-    "X-Total-count": totalVouchersQuery,
+    "X-Total-count": totalVouchersQuery
   });
 });
 
 export const createVoucher = asyncWrapper(async (req, res, next) => {
   const reqBody = req.body;
-  const { value: data, error } = voucherSchema.validate(reqBody, {
-    dateFormat: "date",
-  });
+  const { value: data, error } = voucherSchema.validate(reqBody);
 
   if (error !== undefined) {
     return next(createError(400, error.message));
   }
 
-  await prisma.voucher.create({ data });
+  await prisma.voucher.create({ data }).catch(err => console.error(err));
   return res.status(201).json({ msg: "Voucher has been created" });
 });
 
@@ -130,14 +128,15 @@ export const updateVoucher = asyncWrapper(async (req, res, next) => {
     );
   }
 
-  const validationResult = voucherSchema.validate(body, { convert: true });
+  const validationResult = voucherSchema.validate(body);
   if (validationResult.error) {
     return next(createError(400, validationResult.error.details[0].message));
   }
+
   try {
     await prisma.voucher.update({
       where: { id: req.params.id },
-      data: body,
+      data: body
     });
   } catch (error) {
     if (
