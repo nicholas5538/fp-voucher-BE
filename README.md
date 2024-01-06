@@ -88,10 +88,11 @@ npx dotenv-vault@latest pull development .env
    from [@nicholas5538](https://github.com/nicholas5538 "nicholas5538 GitHub profile").
 
 ```zsh
+CLIENT_ID=<Insert id here>
+CLIENT_SECRET=<Insert secret here>
+DATABASE_URL=<Insert database connection string here>
 JWT_SECRET=<Insert a 64-bit JWT secret key here>
 JWT_EXPIRES_IN=<Insert JWT expiry date here>
-MONGO_COLLECTION=<Insert collection name here>
-MONGO_URI=<Insert connection string here>
 PORT=<Insert port number here>
 ```
 
@@ -134,7 +135,7 @@ Obtain all vouchers with pagination options
 - Queries (Optional)
 
   | Query  | Type   | Description                            |
-                | ------ | ------ | -------------------------------------- |
+                  | ------ | ------ | -------------------------------------- |
   | offset | Number | Define the starting index of your data |
   | limit  | Number | Define the amount of data per request  |
 
@@ -190,7 +191,7 @@ Obtain a single voucher based on the voucher id defined on the URL
 - Parameter
 
   | Parameter | Description                               |
-                | --------- | ----------------------------------------- |
+                  | --------- | ----------------------------------------- |
   | voucherId | Retrieves the specified id of the voucher |
 
 - Making a request
@@ -238,7 +239,7 @@ You will obtain a JWT that allows you to access all the other API endpoints
 - Request body (required)
 
   | Key   | Description                           |
-                | ----- | ------------------------------------- |
+                  | ----- | ------------------------------------- |
   | email | Email must have a valid @gmail domain |
   | name  | Name defined in your gmail account    |
 
@@ -308,7 +309,7 @@ Updates the voucher without modifying the entire data if it's not necessary
 - Parameter
 
   | Parameter | Description                              |
-                | --------- | ---------------------------------------- |
+                  | --------- | ---------------------------------------- |
   | voucherId | Updates the voucher that has the same ID |
 
 - Request body (required)
@@ -316,7 +317,7 @@ Updates the voucher without modifying the entire data if it's not necessary
   All keys except for `expiryDate` and `startDate` are optional
 
   | Key         | Type                                  |
-                | ----------- | ------------------------------------- |
+                  | ----------- | ------------------------------------- |
   | category    | String                                |
   | description | String                                |
   | discount    | Number                                |
@@ -355,7 +356,7 @@ Deletes the voucher from the database
 - Parameter
 
   | Parameter | Description                           |
-                | --------- | ------------------------------------- |
+                  | --------- | ------------------------------------- |
   | voucherId | Delete a voucher that has the same ID |
 
 - Making a request

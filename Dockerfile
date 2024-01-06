@@ -28,7 +28,7 @@ RUN pnpm run build:prod
 
 FROM base AS prod
 ENV NODE_ENV production
-EXPOSE 3500
+EXPOSE 4500
 
 RUN deluser --remove-home node \
   && addgroup -S node --gid 1001 \
