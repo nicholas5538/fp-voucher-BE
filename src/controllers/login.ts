@@ -24,7 +24,7 @@ const login = asyncWrapper(async (req, res, next) => {
 
   if (!userFound.length) {
     const newUser = await prisma.user.create({
-      data: { ...payload, isAdmin: true }
+      data: { ...payload, isAdmin: true },
     });
     userId = newUser.id;
   } else {
@@ -33,13 +33,18 @@ const login = asyncWrapper(async (req, res, next) => {
 
   const token = jwt.sign(payload, process.env.JWT_SECRET as string, {
     algorithm: "HS512",
-    expiresIn: process.env.JWT_EXPIRES_IN
+    expiresIn: process.env.JWT_EXPIRES_IN,
   });
   const expires = new Date(new Date().getTime() + 7 * 24 * 60 * 60 * 1000);
 
   return res
     .status(201)
-    .cookie("jwt", token, { expires, path: "/", secure: true, sameSite: "none" })
+    .cookie("jwt", token, {
+      expires,
+      path: "/",
+      secure: true,
+      sameSite: "none",
+    })
     .header("Authorization", token)
     .header("Access-Control-Expose-Headers", "Authorization")
     .json({ msg: "Token has been issued", userId });
