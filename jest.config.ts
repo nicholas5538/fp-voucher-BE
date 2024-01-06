@@ -10,13 +10,15 @@ const config: JestConfigWithTsJest = {
     "/src/constants",
     "/src/index.ts",
     "/src/routes",
+    // This cannot be tested as secret OAuth code is not a constant
+    "/src/controllers/google-auth.ts"
   ],
   coverageProvider: "v8",
   coverageReporters: ["json", "text", "lcov", "clover"],
   extensionsToTreatAsEsm: [".ts"],
   moduleFileExtensions: ["js", "ts"],
   moduleNameMapper: {
-    "^(\\.{1,2}/.*)\\.js$": "$1",
+    "^(\\.{1,2}/.*)\\.js$": "$1"
   },
   roots: ["<rootDir>/src"],
   setupFiles: ["dotenv/config"],
@@ -26,12 +28,12 @@ const config: JestConfigWithTsJest = {
     "^.+\\.[tj]sx?$": [
       "ts-jest",
       {
-        useESM: true,
-      },
-    ],
+        useESM: true
+      }
+    ]
   },
   verbose: true,
-  watchPathIgnorePatterns: ["/node_modules/", "/src/db/", "/src/constants"],
+  watchPathIgnorePatterns: ["/node_modules/", "/src/db/", "/src/constants"]
 };
 
 export default config;

@@ -1,6 +1,8 @@
 ---
 name: Run Tests
 env:
+  CLIENT_ID: ${{ secrets.CLIENT_ID }}
+  CLIENT_SECRET: ${{ secrets.CLIENT_SECRET }}
   DATABASE_URL: ${{ secrets.DATABASE_URL }}
   JWT_SECRET: ${{ secrets.JWT_SECRET }}
   JWT_EXPIRES_IN: ${{ secrets.JWT_EXPIRES_IN }}
@@ -32,7 +34,9 @@ jobs:
 
       - name: Write secrets to env file
         run: |
-          echo "DATABASE_URL=${DATABASE_URL}" >.env
+          echo "CLIENT_ID=${CLIENT_ID}" > .env
+          echo "CLIENT_SECRET=${CLIENT_SECRET}" >> .env
+          echo "DATABASE_URL=${DATABASE_URL}" >>.env
           echo "JWT_SECRET=${JWT_SECRET}" >> .env
           echo "JWT_EXPIRES_IN=${JWT_EXPIRES_IN}" >> .env
           echo "PORT=${PORT}" >> .env
