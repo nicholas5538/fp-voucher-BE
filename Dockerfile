@@ -41,4 +41,4 @@ COPY --from=build --chown=node:node /app/run-main.js run-main.js
 
 USER node
 
-CMD ["node", "run-main.js"]
+CMD ["node", "-r", "dotenv/config", "run-main.js"]

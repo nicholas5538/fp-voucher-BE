@@ -1,14 +1,12 @@
 node_modules
 coverage
 .idea
-.env
-.env.example
 .git
 .github
 .gitignore
 *.md
 dist
 .env*
+!.env.vault
 .flaskenv*
 !.env.project
-!.env.vault
