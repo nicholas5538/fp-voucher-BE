@@ -77,7 +77,7 @@ cd fp-voucher-BE
 2 methods of obtaining environment variables
 
 1. Using [dotenv-vault](https://github.com/dotenv-org/dotenv-vault#pull "dotenv-vault GitHub repository"), please
-   request `vault_id` from [@nicholas5538](https://github.com/nicholas5538)
+   request `vault_id` from [@nicholas5538](https://github.com/nicholas5538) (recommended)
 
 ```zsh
 npx dotenv-vault@latest new <vault_id>
@@ -101,7 +101,7 @@ PORT=<Insert port number here>
 Once you have [set up the repo](#repository-setup), you're ready to start developing. Starting the development
 environment is managed by the following command(s).
 
-- With **Docker (recommended)**
+- With **Docker Compose or Docker** (recommended)
 
 ```sh
 # With Docker compose, you're able
@@ -110,8 +110,7 @@ docker compose up -d --build
 
 # Or build your own image
 docker build --compress -t <image name> --target dev .
-# For Windows PowerShell: ${pwd}, : $(pwd)
-docker run -d -p 3000:3000 -v .:/app -v /app/node_modules --name <container name> <image name>
+docker run -e DOTENV_KEY="<Insert DOTENV_KEY here with quotation marks>" -d -p 3000:3000 -v .:/app -v /app/node_modules --name <container name> <image name>
 ```
 
 - With **pnpm**
@@ -121,7 +120,7 @@ pnpm run i # Only run this when you have not installed any dependencies
 pnpm run dev
 ```
 
-The `dev` command will start the application in your local environment (port 5173).
+The `dev` command will start the application in your local environment (port 3500).
 
 ## API Documentation
 
@@ -135,7 +134,7 @@ Obtain all vouchers with pagination options
 - Queries (Optional)
 
   | Query  | Type   | Description                            |
-                  | ------ | ------ | -------------------------------------- |
+                            | ------ | ------ | -------------------------------------- |
   | offset | Number | Define the starting index of your data |
   | limit  | Number | Define the amount of data per request  |
 
@@ -191,7 +190,7 @@ Obtain a single voucher based on the voucher id defined on the URL
 - Parameter
 
   | Parameter | Description                               |
-                  | --------- | ----------------------------------------- |
+                            | --------- | ----------------------------------------- |
   | voucherId | Retrieves the specified id of the voucher |
 
 - Making a request
@@ -239,7 +238,7 @@ You will obtain a JWT that allows you to access all the other API endpoints
 - Request body (required)
 
   | Key   | Description                           |
-                  | ----- | ------------------------------------- |
+                            | ----- | ------------------------------------- |
   | email | Email must have a valid @gmail domain |
   | name  | Name defined in your gmail account    |
 
@@ -250,6 +249,7 @@ You will obtain a JWT that allows you to access all the other API endpoints
     -H 'Content-Type: application/json' \
     -H 'Accept: */*' \
     -X POST \
+    -d '{"email": "1233@gmail.com", "name": "Nicholas"}'
     https://fp-capstone-backend.onrender/users
   ```
 
@@ -264,7 +264,70 @@ You will obtain a JWT that allows you to access all the other API endpoints
   </details>
 
 <details>
-    <summary>2. https://fp-capstone-backend.onrender/api/v1/vouchers</summary>
+  <summary>2. https://fp-capstone-backend.onrender/auth/google</summary>
+
+You will obtain Google's tokens for communication with Google APIs.
+
+- Request body (required)
+
+  | Key  | Description                                |
+    |------|--------------------------------------------|
+  | code | A code needed to access Google Auth tokens |
+
+- Making a request
+
+  ```curl
+  curl \
+    -H 'Content-Type: application/json' \
+    -H 'Accept: */*' \
+    -X POST \
+    -d '{"code": "ah-hfuehguyerhgyuhe"}'
+    https://fp-capstone-backend.onrender/auth/google
+  ```
+
+- Response (HTTP 200)
+
+  ```json
+  {
+    msg: "Tokens has been issued", "access_token": "12345", "refresh_token": "234434", "id_token": "2342432j4i3j42", "expiry_date": "1789885498"
+  }
+  ```
+
+</details>
+
+<details>
+  <summary>3. https://fp-capstone-backend.onrender/auth/google/refresh-token</summary>
+You will obtain a _refreshed_ Google's tokens for communication with Google APIs.
+
+- Request body (required)
+
+  | Key          | Description                                |
+    |--------------|--------------------------------------------|
+  | refreshToken | A token needed to refresh the access token |
+
+- Making a request
+
+  ```curl
+  curl \
+    -H 'Content-Type: application/json' \
+    -H 'Accept: */*' \
+    -X POST \
+    -d '{"code": "ah-hfuehguyerhgyuhe"}'
+    https://fp-capstone-backend.onrender/auth/google/refresh-token
+  ```
+
+- Response (HTTP 200)
+
+  ```json
+  {
+    msg: "Tokens has been refreshed", "access_token": "12345", "refresh_token": "234434", "id_token": "2342432j4i3j42", "expiry_date": "1789885498"
+  }
+  ```
+
+</details>
+
+<details>
+    <summary>4. https://fp-capstone-backend.onrender/api/v1/vouchers</summary>
 
 Creates a voucher and store it in the database
 
@@ -309,7 +372,7 @@ Updates the voucher without modifying the entire data if it's not necessary
 - Parameter
 
   | Parameter | Description                              |
-                  | --------- | ---------------------------------------- |
+                            | --------- | ---------------------------------------- |
   | voucherId | Updates the voucher that has the same ID |
 
 - Request body (required)
@@ -317,7 +380,7 @@ Updates the voucher without modifying the entire data if it's not necessary
   All keys except for `expiryDate` and `startDate` are optional
 
   | Key         | Type                                  |
-                  | ----------- | ------------------------------------- |
+                            | ----------- | ------------------------------------- |
   | category    | String                                |
   | description | String                                |
   | discount    | Number                                |
@@ -356,7 +419,7 @@ Deletes the voucher from the database
 - Parameter
 
   | Parameter | Description                           |
-                  | --------- | ------------------------------------- |
+                            | --------- | ------------------------------------- |
   | voucherId | Delete a voucher that has the same ID |
 
 - Making a request

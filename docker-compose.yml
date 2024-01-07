@@ -7,11 +7,14 @@ services:
       target: dev
     container_name: api-dev
     command: pnpm run dev
+    environment:
+      NODE_ENV: ${NODE_ENV}
+      DOTENV_KEY: ${DOTENV_KEY}
     env_file:
       - .env
     restart: always
     ports:
-      - "3500:3500"
+      - "4500"
     volumes:
       - .:/app
       - /app/node_modules
