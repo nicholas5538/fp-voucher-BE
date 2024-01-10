@@ -40,6 +40,7 @@
     "joi": "17.11.0",
     "jsonwebtoken": "9.0.2",
     "prisma": "5.7.1",
+    "redis": "4.6.12",
     "ts-loader": "9.5.1",
     "typescript": "5.3.3",
     "webpack": "5.89.0",
