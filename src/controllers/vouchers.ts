@@ -38,10 +38,10 @@ export const getVoucher = asyncWrapper(async (req, res, next) => {
   return res.status(200).json({
     _links: {
       base: baseUrl,
-      self: baseUrl + req.originalUrl
+      self: baseUrl + req.originalUrl,
     },
     results: voucher,
-    "X-Total-count": 1
+    "X-Total-count": 1,
   });
 });
 
@@ -50,16 +50,19 @@ export const getVouchers = asyncWrapper(async (req, res, next) => {
   const skip = Number(offset) || 0,
     take = Number(limit) || 10,
     page = Math.floor(skip / take) + 1;
-  const vouchers = await prisma.$queryRaw<Voucher[]>`SELECT _id AS id,
-                                                            category,
-                                                            description,
-                                                            discount,
-                                                            "minSpending",
-                                                            "promoCode",
-                                                            "startDate",
-                                                            "expiryDate"
-                                                     FROM "public"."Voucher" LIMIT ${take}
-                                                     OFFSET ${skip}`;
+  const [vouchers, totalVouchersCount] = await Promise.all([
+    prisma.$queryRaw<Voucher[]>`SELECT _id AS id,
+                                       category,
+                                       description,
+                                       discount,
+                                       "minSpending",
+                                       "promoCode",
+                                       "startDate",
+                                       "expiryDate"
+                                FROM "public"."Voucher" LIMIT ${take}
+                                OFFSET ${skip}`,
+    prisma.voucher.count(),
+  ]);
 
   const totalVouchersQuery = vouchers.length;
   if (!totalVouchersQuery) {
@@ -72,11 +75,10 @@ export const getVouchers = asyncWrapper(async (req, res, next) => {
   }
 
   const baseUrl = `${req.protocol}://${req.get("host")}`,
-    totalVouchersCount = await prisma.voucher.count(),
     lastPage = Math.floor(totalVouchersCount / take) + 1,
     links: Tlinks = {
       base: baseUrl,
-      self: baseUrl + req.originalUrl
+      self: baseUrl + req.originalUrl,
     };
 
   if (skip + totalVouchersQuery < totalVouchersCount) {
@@ -101,7 +103,7 @@ export const getVouchers = asyncWrapper(async (req, res, next) => {
     results: vouchers,
     start: skip,
     totalVouchers: totalVouchersCount,
-    "X-Total-count": totalVouchersQuery
+    "X-Total-count": totalVouchersQuery,
   });
 });
 
@@ -113,7 +115,7 @@ export const createVoucher = asyncWrapper(async (req, res, next) => {
     return next(createError(400, error.message));
   }
 
-  await prisma.voucher.create({ data }).catch(err => console.error(err));
+  await prisma.voucher.create({ data }).catch((err) => console.error(err));
   return res.status(201).json({ msg: "Voucher has been created" });
 });
 
@@ -136,7 +138,7 @@ export const updateVoucher = asyncWrapper(async (req, res, next) => {
   try {
     await prisma.voucher.update({
       where: { id: req.params.id },
-      data: body
+      data: body,
     });
   } catch (error) {
     if (
