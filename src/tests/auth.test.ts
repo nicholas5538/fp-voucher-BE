@@ -60,9 +60,11 @@ describe("Test JWT verification middleware", () => {
 
   it("should allow access with a valid token", async () => {
     const { headers } = await request(app).post("/user").send(dummyBody);
-    expect(headers.authorization).not.toBeNull();
+    expect(headers["set-cookie"].length).toBe(1);
 
-    const validToken = `Bearer ${headers.authorization}`;
+    const validToken = `Bearer ${headers["set-cookie"][0]
+      .split(";")[0]
+      .slice(4)}`;
     const { body, statusCode } = await request(app)
       .get("/api/v1/vouchers")
       .set("Authorization", validToken);

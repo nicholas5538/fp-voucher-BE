@@ -1,21 +1,14 @@
-import createError from "http-errors";
-import jwt from "jsonwebtoken";
-import { tokenSchema } from "../constants/joi-schema.js";
+import client from "../client.js";
 import asyncWrapper, { prisma } from "../middleware/async.js";
 
 type UserId = {
   id: string;
 };
 
-const login = asyncWrapper(async (req, res, next) => {
+const login = asyncWrapper(async (req, res, _next) => {
   const { email, name } = req.body;
-  const payload = { email, name };
-  let userId;
-
-  const validationResult = tokenSchema.validate(payload);
-  if (validationResult.error) {
-    return next(createError(400, validationResult.error.details[0].message));
-  }
+  let userId,
+    prefix = "user:";
 
   const userFound = await prisma.$queryRaw<UserId[]>`SELECT id
                                                      FROM "public"."User"
@@ -24,30 +17,34 @@ const login = asyncWrapper(async (req, res, next) => {
 
   if (!userFound.length) {
     const newUser = await prisma.user.create({
-      data: { ...payload, isAdmin: true },
+      data: { ...req.body, isAdmin: true },
     });
     userId = newUser.id;
+    prefix += newUser.id;
   } else {
     userId = userFound[0].id;
+    prefix += userFound[0].id;
   }
 
-  const token = jwt.sign(payload, process.env.JWT_SECRET as string, {
-    algorithm: "HS512",
-    expiresIn: process.env.JWT_EXPIRES_IN,
+  // TODO: Create user in redis database
+  await client.json.set(prefix, "$", {
+    name: name,
+    admin: true,
+    email: email,
+    userId: userId,
+    session: {
+      id: req.sessionID,
+      expiry: req.expires!,
+    },
   });
-  const expires = new Date(new Date().getTime() + 7 * 24 * 60 * 60 * 1000);
+  await client.quit();
 
   return res
     .status(201)
-    .cookie("jwt", token, {
-      expires,
-      path: "/",
-      secure: true,
-      sameSite: "none",
-    })
-    .header("Authorization", token)
-    .header("Access-Control-Expose-Headers", "Authorization")
-    .json({ msg: "Token has been issued", userId });
+    .cookie("jwt", req.token!, req.options!)
+    .header("UserID", userId)
+    .header("Access-Control-Expose-Headers", "UserID")
+    .json({ msg: "Token has been issued" });
 });
 
 export default login;

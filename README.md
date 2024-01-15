@@ -7,14 +7,14 @@
 - [Quick Links](#quick-links)
 - [Context](#context)
 - [Getting Started](#getting-started)
-    - [Environment Setup](#environment-setup)
-    - [Repository Setup](#repository-setup)
+  - [Environment Setup](#environment-setup)
+  - [Repository Setup](#repository-setup)
 - [Developing](#developing)
 - [API Documentation](#api-documentation)
-    - [GET request](#get-request)
-    - [POST request](#post-request)
-    - [PATCH request](#patch-request)
-    - [DELETE request](#delete-request)
+  - [GET request](#get-request)
+  - [POST request](#post-request)
+  - [PATCH request](#patch-request)
+  - [DELETE request](#delete-request)
 - [Additional Documentations](#additional-documentations)
 
 ## Quick links
@@ -56,12 +56,12 @@ The following HTTP request methods have been implemented:
 
 2. With package manager **[pnpm](https://pnpm.io/installation)**
 
-    - Install any version of node that is >= 14.0.0.
+   - Install any version of node that is >= 14.0.0.
 
    > 💁 **Tip:** You can use [nvm](https://github.com/nvm-sh/nvm "nvm repo") to easily manage multiple versions of node.
-   Once installed, run `nvm use` in the project directory.
+   > Once installed, run `nvm use` in the project directory.
 
-    - Install [pnpm](https://pnpm.io/installation)
+   - Install [pnpm](https://pnpm.io/installation)
 
    > 💁 `npm install -g pnpm`
 
@@ -134,7 +134,7 @@ Obtain all vouchers with pagination options
 - Queries (Optional)
 
   | Query  | Type   | Description                            |
-                            | ------ | ------ | -------------------------------------- |
+  | ------ | ------ | -------------------------------------- |
   | offset | Number | Define the starting index of your data |
   | limit  | Number | Define the amount of data per request  |
 
@@ -190,7 +190,7 @@ Obtain a single voucher based on the voucher id defined on the URL
 - Parameter
 
   | Parameter | Description                               |
-                            | --------- | ----------------------------------------- |
+  | --------- | ----------------------------------------- |
   | voucherId | Retrieves the specified id of the voucher |
 
 - Making a request
@@ -238,7 +238,7 @@ You will obtain a JWT that allows you to access all the other API endpoints
 - Request body (required)
 
   | Key   | Description                           |
-                            | ----- | ------------------------------------- |
+  | ----- | ------------------------------------- |
   | email | Email must have a valid @gmail domain |
   | name  | Name defined in your gmail account    |
 
@@ -257,7 +257,8 @@ You will obtain a JWT that allows you to access all the other API endpoints
 
   ```json
   {
-    msg: "Token has been issued", "userId": "233i32ih2uihgiu"
+    "msg": "Token has been issued",
+    "userId": "233i32ih2uihgiu"
   }
   ```
 
@@ -271,7 +272,7 @@ You will obtain Google's tokens for communication with Google APIs.
 - Request body (required)
 
   | Key  | Description                                |
-    |------|--------------------------------------------|
+  | ---- | ------------------------------------------ |
   | code | A code needed to access Google Auth tokens |
 
 - Making a request
@@ -289,7 +290,11 @@ You will obtain Google's tokens for communication with Google APIs.
 
   ```json
   {
-    msg: "Tokens has been issued", "access_token": "12345", "refresh_token": "234434", "id_token": "2342432j4i3j42", "expiry_date": "1789885498"
+    "msg": "Tokens has been issued",
+    "access_token": "12345",
+    "refresh_token": "234434",
+    "id_token": "2342432j4i3j42",
+    "expiry_date": "1789885498"
   }
   ```
 
@@ -302,7 +307,7 @@ You will obtain a _refreshed_ Google's tokens for communication with Google APIs
 - Request body (required)
 
   | Key          | Description                                |
-    |--------------|--------------------------------------------|
+  | ------------ | ------------------------------------------ |
   | refreshToken | A token needed to refresh the access token |
 
 - Making a request
@@ -320,7 +325,11 @@ You will obtain a _refreshed_ Google's tokens for communication with Google APIs
 
   ```json
   {
-    msg: "Tokens has been refreshed", "access_token": "12345", "refresh_token": "234434", "id_token": "2342432j4i3j42", "expiry_date": "1789885498"
+    "msg": "Tokens has been refreshed",
+    "access_token": "12345",
+    "refresh_token": "234434",
+    "id_token": "2342432j4i3j42",
+    "expiry_date": "1789885498"
   }
   ```
 
@@ -334,7 +343,7 @@ Creates a voucher and store it in the database
 - Request body (required)
 
 | Key                  | Value                                                | Type                |
-|----------------------|------------------------------------------------------|---------------------|
+| -------------------- | ---------------------------------------------------- | ------------------- |
 | userId (Foreign Key) | 233i32ih2uihgiu                                      | String              |
 | category             | "Pickup", "Delivery", "Dine", "Pandamart", "Pandago" | String              |
 | description          | "10% off on Subway                                   | String              |
@@ -372,7 +381,7 @@ Updates the voucher without modifying the entire data if it's not necessary
 - Parameter
 
   | Parameter | Description                              |
-                            | --------- | ---------------------------------------- |
+  | --------- | ---------------------------------------- |
   | voucherId | Updates the voucher that has the same ID |
 
 - Request body (required)
@@ -380,7 +389,7 @@ Updates the voucher without modifying the entire data if it's not necessary
   All keys except for `expiryDate` and `startDate` are optional
 
   | Key         | Type                                  |
-                            | ----------- | ------------------------------------- |
+  | ----------- | ------------------------------------- |
   | category    | String                                |
   | description | String                                |
   | discount    | Number                                |
@@ -419,7 +428,7 @@ Deletes the voucher from the database
 - Parameter
 
   | Parameter | Description                           |
-                            | --------- | ------------------------------------- |
+  | --------- | ------------------------------------- |
   | voucherId | Delete a voucher that has the same ID |
 
 - Making a request
