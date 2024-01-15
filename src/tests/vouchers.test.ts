@@ -27,8 +27,8 @@ function createVoucher(token: string) {
 
 describe("GET /api/v1/vouchers", () => {
   it("should return no voucher error when the offset or limit is out of bounds", async () => {
-    const { header } = await request(app).post("/user").send(dummyBody);
-    validToken = `Bearer ${header.authorization}`;
+    const { headers } = await request(app).post("/user").send(dummyBody);
+    validToken = `Bearer ${headers["set-cookie"][0].split(";")[0].slice(4)}`;
 
     const { body, notFound, statusCode } = await request(app)
       .get(`/api/v1/vouchers?offset=${Number.MAX_SAFE_INTEGER}`)
