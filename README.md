@@ -39,11 +39,12 @@ The following HTTP request methods have been implemented:
 
 ### Tech stack
 
-<img align="left" alt="TypeScript" width="40px" src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/typescript/typescript-original.svg" style="padding-right:10px;" />
-<img align="left" alt="Docker" width="40px" src="https://cdn.jsdelivr.net/npm/devicon-2.2@2.2.0/icons/docker/docker-original.svg" style="padding-right:10px;" />
-<img align="left" alt="Node.js" width="40px" src="https://cdn.jsdelivr.net/npm/devicon-2.2@2.2.0/icons/nodejs/nodejs-original.svg" style="padding-right:10px;" />
-<img align="left" alt="Express.js" width="40px" src="https://cdn.jsdelivr.net/npm/devicon-2.2@2.2.0/icons/express/express-original.svg" style="padding-right:10px;" />
-<img align="left" alt="PostgreSQL" width="40px" src="https://cdn.jsdelivr.net/npm/devicon-2.2@2.2.0/icons/postgresql/postgresql-original.svg" style="padding-right:10px;" />
+<img left alt="Docker" width="40px" src="https://cdn.jsdelivr.net/npm/devicon-2.2@2.2.0/icons/docker/docker-original.svg" style="padding-right:10px;" />
+<img left alt="TypeScript" width="40px" src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/typescript/typescript-original.svg" style="padding-right:10px;" />
+<img left alt="Node.js" width="40px" src="https://cdn.jsdelivr.net/npm/devicon-2.2@2.2.0/icons/nodejs/nodejs-original.svg" style="padding-right:10px;" />
+<img left alt="Express.js" width="40px" src="https://cdn.jsdelivr.net/npm/devicon-2.2@2.2.0/icons/express/express-original.svg" style="padding-right:10px;" />
+<img left alt="PostgreSQL" width="40px" src="https://cdn.jsdelivr.net/npm/devicon-2.2@2.2.0/icons/postgresql/postgresql-original.svg" style="padding-right:10px;" />
+<img left alt="Webpack" width="40px" src="https://cdn.jsdelivr.net/npm/devicon-2.2@2.2.0/icons/redis/redis-original.svg" style="padding-right:10px;" />
 <img alt="Webpack" width="30px" src="https://cdn.jsdelivr.net/npm/devicon-2.2@2.2.0/icons/webpack/webpack-original.svg" />
 
 ## Getting Started
@@ -94,6 +95,9 @@ DATABASE_URL=<Insert database connection string here>
 JWT_SECRET=<Insert a 64-bit JWT secret key here>
 JWT_EXPIRES_IN=<Insert JWT expiry date here>
 PORT=<Insert port number here>
+REDIS_HOST=<Insert redis connection url here>
+REDIS_PW=<Insert redis password>
+SESSION_SECRET=<Insert session secret here>
 ```
 
 ## Developing
