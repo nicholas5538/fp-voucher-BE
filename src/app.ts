@@ -16,7 +16,7 @@ export const oAuth2Client = new OAuth2Client(
 );
 
 const app: Application = express();
-const productionMode = app.get("env") === "production";
+// const productionMode = app.get("env") === "production";
 const sess = {
   genid(): string {
     return crypto.randomUUID();
@@ -27,13 +27,20 @@ const sess = {
   cookie: {
     httpOnly: true,
     secure: true,
-    sameSite: productionMode ? "lax" : "none",
+    sameSite: "none",
     maxAge: 7 * 24 * 60 * 60 * 1000,
   },
 } satisfies SessionOptions;
 
-app.set("trust proxy", productionMode ? 1 : 0);
-app.use(cors());
+app.set("trust proxy", 1);
+app.use(
+  cors({
+    origin: ["https://fp-voucher-portal.onrender.com", "http://localhost:5173"],
+    credentials: true,
+    exposedHeaders: ["UserID"],
+    methods: ["GET", "PATCH", "POST", "DELETE"],
+  })
+);
 app.use(session(sess));
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());

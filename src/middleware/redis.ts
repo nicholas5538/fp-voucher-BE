@@ -56,10 +56,10 @@ export default async function redisMiddleWare(
     expiresIn: jwtMaxAge,
   });
   const options: CookieOptions = {
+    httpOnly: false,
     expires: new Date(jwtMaxAge),
-    path: "/",
-    secure: true,
     sameSite: "none",
+    secure: true,
   };
 
   if (user.total > 0) {
@@ -83,13 +83,11 @@ export default async function redisMiddleWare(
     }
     await client.quit();
 
-    // TODO: Check how to access cookie with supertest
     return res
       .status(201)
       .cookie("jwt", token, options)
       .header("UserID", userId)
-      .header("Access-Control-Expose-Headers", "UserID")
-      .json({ msg: "Token has been issued" });
+      .json({ msg: "Token has been issued", access_token: token });
   }
 
   req.expires = sessionExpiry;
