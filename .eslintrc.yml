@@ -6,6 +6,7 @@ extends:
   - eslint:recommended
   - plugin:@typescript-eslint/recommended
   - prettier
+ignorePatterns: "src/@types/*.ts"
 overrides:
   - files:
       - "test/**"
@@ -38,7 +39,6 @@ rules:
   semi:
     - error
     - always
-  no-unused-vars:
-    - off
   "@typescript-eslint/no-unused-vars":
     - error
+    - argsIgnorePattern: "^_"
