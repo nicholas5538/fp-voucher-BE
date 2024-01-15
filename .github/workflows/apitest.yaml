@@ -7,6 +7,9 @@ env:
   JWT_SECRET: ${{ secrets.JWT_SECRET }}
   JWT_EXPIRES_IN: ${{ secrets.JWT_EXPIRES_IN }}
   PORT: ${{ secrets.PORT }}
+  REDIS_HOST: ${{ secrets.REDIS_HOST }}
+  REDIS_PW: ${{ secrets.REDIS_PW }}
+  SESSION_SECRET: $${{ secrets.SESSION_SECRET }}
 
 on:
   pull_request:
@@ -26,9 +29,9 @@ jobs:
         run: npm -g install pnpm
 
       - name: Setup Node environment
-        uses: actions/setup-node@v3.8.1
+        uses: actions/setup-node@v4.0.1
         with:
-          node-version: 18
+          node-version: 20
           cache: "pnpm"
           cache-dependency-path: pnpm-lock.yaml
 
@@ -40,6 +43,9 @@ jobs:
           echo "JWT_SECRET=${JWT_SECRET}" >> .env
           echo "JWT_EXPIRES_IN=${JWT_EXPIRES_IN}" >> .env
           echo "PORT=${PORT}" >> .env
+          echo "REDIS_HOST=${REDIS_HOST}" >> .env
+          echo "REDIS_PW=${REDIS_PW}" >> .env
+          echo "SESSION_SECRET=${SESSION_SECRET}" >> .env
 
       - name: Install dependencies
         run: pnpm i --frozen-lockfile
