@@ -1,5 +1,5 @@
 import client from "../client.js";
-import type { CookieOptions, Request, Response, NextFunction } from "express";
+import type { Request, Response, NextFunction } from "express";
 import jwt from "jsonwebtoken";
 import { tokenSchema } from "../constants/joi-schema.js";
 import createError from "http-errors";
@@ -55,12 +55,6 @@ export default async function redisMiddleWare(
     algorithm: "HS512",
     expiresIn: jwtMaxAge,
   });
-  const options: CookieOptions = {
-    httpOnly: false,
-    expires: new Date(jwtMaxAge),
-    sameSite: "none",
-    secure: true,
-  };
 
   if (user.total > 0) {
     const storedSession = user.documents[0].value.session as Record<
@@ -85,13 +79,11 @@ export default async function redisMiddleWare(
 
     return res
       .status(201)
-      .cookie("jwt", token, options)
       .header("UserID", userId)
       .json({ msg: "Token has been issued", access_token: token });
   }
 
   req.expires = sessionExpiry;
   req.token = token;
-  req.options = options;
   next();
 }

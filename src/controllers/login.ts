@@ -41,7 +41,6 @@ const login = asyncWrapper(async (req, res, _next) => {
 
   return res
     .status(201)
-    .cookie("jwt", req.token!, req.options!)
     .header("UserID", userId)
     .json({ msg: "Token has been issued", access_token: req.token! });
 });

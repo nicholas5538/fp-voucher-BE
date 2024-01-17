@@ -16,14 +16,13 @@ export const oAuth2Client = new OAuth2Client(
 );
 
 const app: Application = express();
-// const productionMode = app.get("env") === "production";
 const sess = {
   genid(): string {
     return crypto.randomUUID();
   },
   secret: process.env.SESSION_SECRET!,
-  resave: true,
-  saveUninitialized: true,
+  resave: false,
+  saveUninitialized: false,
   cookie: {
     httpOnly: true,
     secure: true,
