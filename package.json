@@ -41,7 +41,7 @@
     "http-terminator": "3.2.0",
     "joi": "17.11.0",
     "jsonwebtoken": "9.0.2",
-    "prisma": "5.8.0",
+    "prisma": "5.9.0",
     "redis": "4.6.12",
     "ts-loader": "9.5.1",
     "typescript": "5.3.3",
