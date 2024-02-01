@@ -46,12 +46,12 @@ describe("POST /user endpoint", () => {
   });
 
   it("should return 201 and generate new token", async () => {
-    const { headers, statusCode } = await request(app)
+    const { body, statusCode } = await request(app)
       .post("/user")
       .send(dummyBody)
       .set("Accept", "application/json");
 
-    expect(headers["set-cookie"].length).toBe(1);
+    expect(body.access_token).not.toBeNull();
     expect(statusCode).toBe(201);
   });
 });
