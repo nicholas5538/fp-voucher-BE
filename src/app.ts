@@ -36,7 +36,7 @@ app.use(
   cors({
     origin: ["https://fp-voucher-portal.onrender.com", "http://localhost:5173"],
     credentials: true,
-    exposedHeaders: ["UserID"],
+    exposedHeaders: ["userID"],
     methods: ["GET", "PATCH", "POST", "DELETE"],
   })
 );
