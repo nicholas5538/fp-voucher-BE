@@ -130,7 +130,7 @@ export const updateVoucher = asyncWrapper(async (req, res, next) => {
     );
   }
 
-  const validationResult = voucherSchema.validate(body);
+  const validationResult = voucherSchema.validate(body, { convert: true });
   if (validationResult.error) {
     return next(createError(400, validationResult.error.details[0].message));
   }
@@ -138,7 +138,7 @@ export const updateVoucher = asyncWrapper(async (req, res, next) => {
   try {
     await prisma.voucher.update({
       where: { id: req.params.id },
-      data: body,
+      data: validationResult.value,
     });
   } catch (error) {
     if (
