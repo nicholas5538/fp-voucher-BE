@@ -115,7 +115,10 @@ export const createVoucher = asyncWrapper(async (req, res, next) => {
     return next(createError(400, error.message));
   }
 
-  await prisma.voucher.create({ data }).catch((err) => console.error(err));
+  const voucher: Prisma.VoucherCreateInput = data;
+  await prisma.voucher
+    .create({ data: voucher })
+    .catch((err) => next(createError(400, err.message)));
   return res.status(201).json({ msg: "Voucher has been created" });
 });
 

@@ -23,14 +23,14 @@ model User {
   isAdmin  Boolean   @default(false) @map("is_admin")
   email    String    @unique
   name     String
-  vouchers Voucher[] @relation("Vouchers")
+  vouchers Voucher[]
 
   @@index([name(sort: Asc)])
 }
 
 model Voucher {
   id          String   @id @default(cuid()) @map("_id")
-  user        User?    @relation("Vouchers", fields: [userId], references: [id])
+  user        User?    @relation(fields: [userId], references: [id], onDelete: SetNull, onUpdate: Cascade)
   userId      String?
   category    Category
   description String
