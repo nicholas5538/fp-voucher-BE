@@ -138,7 +138,7 @@ describe("PATCH /api/v1/vouchers", () => {
   it("should return validation error when the request body is invalid", async () => {
     const voucher = await prisma.$queryRaw<Voucher[]>`SELECT _id AS id
                                                       FROM "public"."Voucher"
-                                                      WHERE category = 'Pickup' LIMIT 1`;
+                                                      WHERE category = 'Delivery' LIMIT 1`;
     const { badRequest, body, statusCode } = await request(app)
       .patch(`/api/v1/vouchers/${voucher[0].id}`)
       .send({ category: "not a category" })
