@@ -3,3 +3,4 @@ build
 coverage
 .gitignore
 nodemon.json
+pnpm-lock.yaml
