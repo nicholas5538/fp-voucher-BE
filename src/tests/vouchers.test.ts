@@ -1,4 +1,5 @@
 import "dotenv/config";
+import dayjs from "dayjs";
 import request from "supertest";
 import app from "../app.js";
 import { dummyBody } from "./common.js";
@@ -14,8 +15,8 @@ const dummyVoucher = {
   discount: 10,
   minSpending: 10,
   promoCode: "APITEST10",
-  startDate: "01-11-2024",
-  expiryDate: "03-20-2024",
+  startDate: dayjs().format("DD/MM/YYYY"),
+  expiryDate: dayjs().add(7, "day").format("DD/MM/YYYY"),
 };
 
 function createVoucher(token: string) {
