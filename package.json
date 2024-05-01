@@ -70,7 +70,7 @@
     "ts-jest": "29.1.2",
     "ts-node": "10.9.2"
   },
-  "packageManager": "pnpm@8.14.0",
+  "packageManager": "pnpm@9.0.6",
   "lint-staged": {
     "*.ts": "eslint",
     "**/*": "prettier --write --ignore-unknown"
