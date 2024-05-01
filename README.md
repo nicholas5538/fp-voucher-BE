@@ -2,6 +2,8 @@
 
 [![codecov](https://codecov.io/gh/nicholas5538/fp-voucher-BE/graph/badge.svg?token=7QBFKXF928)](https://codecov.io/gh/nicholas5538/fp-voucher-BE)
 
+## This project is no longer functioning as Redis is no longer free for individuals
+
 ## Table Of Contents
 
 - [Quick Links](#quick-links)
