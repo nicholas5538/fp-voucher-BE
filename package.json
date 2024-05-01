@@ -44,7 +44,7 @@
     "prisma": "5.11.0",
     "redis": "4.6.13",
     "ts-loader": "9.5.1",
-    "typescript": "5.4.3",
+    "typescript": "5.4.5",
     "webpack": "5.91.0",
     "webpack-cli": "5.1.4",
     "webpack-merge": "5.10.0",
