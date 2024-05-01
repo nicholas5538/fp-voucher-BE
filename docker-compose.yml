@@ -1,4 +1,4 @@
-version: "3.8"
+version: "3.9"
 services:
   devmode:
     build:
@@ -18,3 +18,13 @@ services:
       - .:/app
       - /app/node_modules
       - /app/dist
+  db:
+    image: postgres:latest
+    restart: always
+    shm_size: 128mb
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgresql-data:/var/lib/postgresql
+    environment:
+      POSTGRES_PASSWORD: ${DATABASE_PASSWORD}

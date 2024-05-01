@@ -2,6 +2,7 @@
 logs
 *.log
 npm-debug.log*
+postgresql-data
 
 # Dependency directory
 **/node_modules/**
