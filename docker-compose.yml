@@ -1,11 +1,10 @@
-version: "3.9"
 services:
-  devmode:
+  express-dev:
     build:
       context: .
       dockerfile: Dockerfile
       target: dev
-    container_name: api-dev
+    container_name: express-dev
     command: pnpm run dev
     environment:
       NODE_ENV: development
@@ -13,18 +12,25 @@ services:
       - .env
     restart: always
     ports:
-      - "8080:3500"
+      - "3500:3500"
     volumes:
       - .:/app
       - /app/node_modules
       - /app/dist
-  db:
-    image: postgres:latest
+  postgresql:
+    image: postgres:16.3-alpine3.20
+    environment:
+      POSTGRES_PASSWORD: /run/secrets/db_password
     restart: always
     shm_size: 128mb
     ports:
       - "5432:5432"
     volumes:
       - postgresql-data:/var/lib/postgresql
-    environment:
-      POSTGRES_PASSWORD: ${DATABASE_PASSWORD}
+
+secrets:
+  db_password:
+    file: db_password.txt
+
+volumes:
+  postgresql-data:

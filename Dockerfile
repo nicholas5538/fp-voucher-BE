@@ -5,8 +5,8 @@ LABEL version="1.0"
 COPY . /app
 WORKDIR /app
 
-# Install pnpm
-RUN yarn global add pnpm
+# Enable pnpm
+RUN corepack enable pnpm
 
 # Install dependencies
 FROM base AS dev
