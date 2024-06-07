@@ -30,7 +30,7 @@ The purpose of this project is to practice some backend concepts as well as to l
 architecture.
 
 This is a Node.js app that contains multiple API endpoints to retrieve or manipulate data on
-a [MongoDB](https://www.mongodb.com/ "MongoDB official site") database.
+a [PostgreSQL](https://www.postgresql.org/ "PostgreSQL official site") database.
 
 The following HTTP request methods have been implemented:
 
@@ -46,7 +46,6 @@ The following HTTP request methods have been implemented:
 <img align="left" alt="Node.js" width="40px" src="https://cdn.jsdelivr.net/npm/devicon-2.2@2.2.0/icons/nodejs/nodejs-original.svg" style="padding-right:10px;" />
 <img align="left" alt="Express.js" width="40px" src="https://cdn.jsdelivr.net/npm/devicon-2.2@2.2.0/icons/express/express-original.svg" style="padding-right:10px;" />
 <img align="left" alt="PostgreSQL" width="40px" src="https://cdn.jsdelivr.net/npm/devicon-2.2@2.2.0/icons/postgresql/postgresql-original.svg" style="padding-right:10px;" />
-<img align="left" alt="Redis" width="40px" src="https://cdn.jsdelivr.net/npm/devicon-2.2@2.2.0/icons/redis/redis-original.svg" style="padding-right:10px;" />
 <img alt="Webpack" width="30px" src="https://cdn.jsdelivr.net/npm/devicon-2.2@2.2.0/icons/webpack/webpack-original.svg" />
 
 ## Getting Started
@@ -66,7 +65,7 @@ The following HTTP request methods have been implemented:
 
    - Install [pnpm](https://pnpm.io/installation)
 
-   > 💁 `npm install -g pnpm`
+   > 💁 `corepack enable pnpm`
 
 ### Repository Setup
 
@@ -97,9 +96,13 @@ DATABASE_URL=<Insert database connection string here>
 JWT_SECRET=<Insert a 64-bit JWT secret key here>
 JWT_EXPIRES_IN=<Insert JWT expiry date here>
 PORT=<Insert port number here>
-REDIS_HOST=<Insert redis connection url here>
-REDIS_PW=<Insert redis password>
 SESSION_SECRET=<Insert session secret here>
+```
+
+3. Create a `db_password.txt` on the root directory to store PostgreSQL DB password.
+
+```text
+<Type password in the textfile>
 ```
 
 ## Developing
@@ -122,7 +125,7 @@ docker run -e DOTENV_KEY="<Insert DOTENV_KEY here with quotation marks>" -d -p 3
 - With **pnpm**
 
 ```sh
-pnpm run i # Only run this when you have not installed any dependencies
+pnpm i # Only run this when you have not installed any dependencies
 pnpm run dev
 ```
 

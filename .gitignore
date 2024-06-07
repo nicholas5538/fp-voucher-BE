@@ -31,7 +31,11 @@ RELEASE.md
 .jest-cache
 .verdaccio-cache
 .turbo
+
+# Environment variables
 .env*
 .flaskenv*
+db_password.txt
+.DS_Store
 !.env.project
 !.env.vault
