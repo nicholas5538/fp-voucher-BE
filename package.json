@@ -51,7 +51,7 @@
     "webpack-node-externals": "3.0.0"
   },
   "devDependencies": {
-    "@types/node": "20.14.2",
+    "@types/node": "20.14.9",
     "@types/supertest": "6.0.2",
     "@types/webpack": "5.28.5",
     "@types/webpack-node-externals": "3.0.4",
