@@ -36,7 +36,7 @@
     "dotenv-webpack": "8.1.0",
     "express": "4.19.2",
     "express-session": "1.18.0",
-    "google-auth-library": "9.10.0",
+    "google-auth-library": "9.11.0",
     "http-errors": "2.0.0",
     "http-terminator": "3.2.0",
     "joi": "17.13.1",
